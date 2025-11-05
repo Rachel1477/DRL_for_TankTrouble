@@ -1,0 +1,23 @@
+[build-system]
+requires = ["scikit-build-core>=0.10", "pybind11", "setuptools"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "tank-trouble-env"
+version = "0.1.0"
+description = "TankTrouble RL environment (C++ core with pybind11 bindings)"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "TankTrouble" }]
+dependencies = []
+
+[tool.scikit-build]
+wheel.expand-macos-universal-tags = true
+build-dir = "build"
+
+[tool.scikit-build.cmake]
+minimum-version = "3.24"
+build-type = "Release"
+
+
