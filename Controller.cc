@@ -7,7 +7,6 @@ namespace TankTrouble
 {
     Controller::Controller():
         started(false),
-        controlLoop(nullptr),
         snapshot(new ObjectList) {}
 
     Controller::ObjectListPtr Controller::getObjects()
@@ -15,8 +14,6 @@ namespace TankTrouble
         std::lock_guard<std::mutex> lg(mu);
         return snapshot;
     }
-
-    void Controller::dispatchEvent(ev::Event* event) {controlLoop->dispatchEvent(event);}
 
     Controller::BlockList* Controller::getBlocks()
     {
@@ -35,7 +32,6 @@ namespace TankTrouble
 
     Controller::~Controller()
     {
-        controlLoop->quit();
         if(controlThread.joinable())
             controlThread.join();
     }

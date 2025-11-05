@@ -14,8 +14,7 @@
 #include "Tank.h"
 #include "Block.h"
 #include "controller/Data.h"
-#include "reactor/EventLoop.h"
-#include "reactor/Event.h"
+#include "event/ControlEvent.h"
 
 namespace TankTrouble
 {
@@ -32,7 +31,7 @@ namespace TankTrouble
 
         virtual void start() = 0;
         ObjectListPtr getObjects();
-        void dispatchEvent(ev::Event* event);
+        virtual void dispatchEvent(const ControlEvent& event) = 0;
         BlockList* getBlocks();
         std::vector<PlayerInfo> getPlaysInfo();
         virtual void quitGame() {}
@@ -52,7 +51,6 @@ namespace TankTrouble
         std::condition_variable cv;
         bool started;
         std::thread controlThread;
-        ev::reactor::EventLoop* controlLoop;
     };
 }
 

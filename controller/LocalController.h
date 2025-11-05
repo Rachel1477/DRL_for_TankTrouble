@@ -7,6 +7,9 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include <atomic>
+#include <queue>
+#include <chrono>
 #include "Controller.h"
 #include "Object.h"
 #include "util/Vec.h"
@@ -38,13 +41,16 @@ namespace TankTrouble
         LocalController();
         ~LocalController() override;
         void start() override;
+        void dispatchEvent(const ControlEvent& event) override;
+        void quitGame() override;
 
     private:
         void restart(double delay);
         void initAll();
+        void resetState();
         void run();
         void moveAll();
-        void controlEventHandler(ev::Event* event);
+        void controlEventHandler(const ControlEvent& event);
         void updateStrategy(Strategy* strategy);
         void fire(Tank* tank);
 
@@ -74,6 +80,12 @@ namespace TankTrouble
         std::vector<int> shellPossibleCollisionBlocks[HORIZON_GRID_NUMBER][VERTICAL_GRID_NUMBER][8];
         std::vector<int> tankPossibleCollisionBlocks[HORIZON_GRID_NUMBER][VERTICAL_GRID_NUMBER];
         uint64_t globalSteps;
+
+        std::mutex eventsMu;
+        std::queue<ControlEvent> pendingEvents;
+        std::atomic<bool> quitting{false};
+        std::atomic<bool> pendingRestart{false};
+        std::chrono::steady_clock::time_point restartAt;
 
         friend class AgentSmith;
         friend class DodgeStrategy;

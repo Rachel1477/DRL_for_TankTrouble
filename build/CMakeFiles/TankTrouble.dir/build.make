@@ -377,34 +377,6 @@ CMakeFiles/TankTrouble.dir/Window.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/TankTrouble.dir/Window.cc.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rachel/CLionProjects/TankTrouble/Window.cc -o CMakeFiles/TankTrouble.dir/Window.cc.s
 
-CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.o: CMakeFiles/TankTrouble.dir/flags.make
-CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.o: ../ev/ev/reactor/EventLoop.cc
-CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.o: CMakeFiles/TankTrouble.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/rachel/CLionProjects/TankTrouble/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.o -MF CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.o.d -o CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.o -c /home/rachel/CLionProjects/TankTrouble/ev/ev/reactor/EventLoop.cc
-
-CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rachel/CLionProjects/TankTrouble/ev/ev/reactor/EventLoop.cc > CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.i
-
-CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rachel/CLionProjects/TankTrouble/ev/ev/reactor/EventLoop.cc -o CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.s
-
-CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.o: CMakeFiles/TankTrouble.dir/flags.make
-CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.o: ../ev/ev/reactor/Timestamp.cc
-CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.o: CMakeFiles/TankTrouble.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/rachel/CLionProjects/TankTrouble/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.o -MF CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.o.d -o CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.o -c /home/rachel/CLionProjects/TankTrouble/ev/ev/reactor/Timestamp.cc
-
-CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rachel/CLionProjects/TankTrouble/ev/ev/reactor/Timestamp.cc > CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.i
-
-CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rachel/CLionProjects/TankTrouble/ev/ev/reactor/Timestamp.cc -o CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.s
-
 # Object files for target TankTrouble
 TankTrouble_OBJECTS = \
 "CMakeFiles/TankTrouble.dir/main.cc.o" \
@@ -428,9 +400,7 @@ TankTrouble_OBJECTS = \
 "CMakeFiles/TankTrouble.dir/view/GameView.cc.o" \
 "CMakeFiles/TankTrouble.dir/view/component/GameArea.cc.o" \
 "CMakeFiles/TankTrouble.dir/view/component/PlayerInfoItem.cc.o" \
-"CMakeFiles/TankTrouble.dir/Window.cc.o" \
-"CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.o" \
-"CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.o"
+"CMakeFiles/TankTrouble.dir/Window.cc.o"
 
 # External object files for target TankTrouble
 TankTrouble_EXTERNAL_OBJECTS =
@@ -457,11 +427,9 @@ TankTrouble: CMakeFiles/TankTrouble.dir/view/GameView.cc.o
 TankTrouble: CMakeFiles/TankTrouble.dir/view/component/GameArea.cc.o
 TankTrouble: CMakeFiles/TankTrouble.dir/view/component/PlayerInfoItem.cc.o
 TankTrouble: CMakeFiles/TankTrouble.dir/Window.cc.o
-TankTrouble: CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.o
-TankTrouble: CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.o
 TankTrouble: CMakeFiles/TankTrouble.dir/build.make
 TankTrouble: CMakeFiles/TankTrouble.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/rachel/CLionProjects/TankTrouble/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Linking CXX executable TankTrouble"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/rachel/CLionProjects/TankTrouble/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Linking CXX executable TankTrouble"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/TankTrouble.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

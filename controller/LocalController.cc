@@ -12,6 +12,8 @@
 #include "smithAI/AgentSmith.h"
 #include <thread>
 #include <cassert>
+#include <queue>
+#include <chrono>
 
 namespace TankTrouble
 {
@@ -45,24 +47,28 @@ namespace TankTrouble
 
     void LocalController::restart(double delay)
     {
-        controlLoop->runAfter(delay, [this]() -> void {
-            globalSteps = 0;
-            objects.clear();
-            blocks.clear();
-            deletedObjs.clear();
-            for(int i = 0; i < HORIZON_GRID_NUMBER; i++)
-                for(int j = 0; j < VERTICAL_GRID_NUMBER; j++)
-                {
-                    tankPossibleCollisionBlocks[i][j].clear();
-                    for(int k = 0; k < 8; k++)
-                        shellPossibleCollisionBlocks[i][j][k].clear();
-                }
-            smithDodgeStrategy.reset(nullptr);
-            smithContactStrategy.reset(nullptr);
-            smithAttackStrategy.reset(nullptr);
-            util::Id::reset();
-            initAll();
-        });
+        pendingRestart.store(true);
+        restartAt = std::chrono::steady_clock::now() + std::chrono::milliseconds(static_cast<int>(delay * 1000));
+    }
+
+    void LocalController::resetState()
+    {
+        globalSteps = 0;
+        objects.clear();
+        blocks.clear();
+        deletedObjs.clear();
+        for(int i = 0; i < HORIZON_GRID_NUMBER; i++)
+            for(int j = 0; j < VERTICAL_GRID_NUMBER; j++)
+            {
+                tankPossibleCollisionBlocks[i][j].clear();
+                for(int k = 0; k < 8; k++)
+                    shellPossibleCollisionBlocks[i][j][k].clear();
+            }
+        smithDodgeStrategy.reset(nullptr);
+        smithContactStrategy.reset(nullptr);
+        smithAttackStrategy.reset(nullptr);
+        util::Id::reset();
+        initAll();
     }
 
     void LocalController::initAll()
@@ -79,36 +85,61 @@ namespace TankTrouble
 
     void LocalController::run()
     {
-        ev::reactor::EventLoop loop;
-        controlLoop = &loop;
         {
             std::unique_lock<std::mutex> lk(mu);
             started = true;
             cv.notify_all();
         }
 
-        auto* controlEvent = new ControlEvent;
-        loop.addEventListener(controlEvent,
-                              [this](ev::Event* event){this->controlEventHandler(event);});
+        using clock = std::chrono::steady_clock;
+        auto nextMove = clock::now();
+        auto nextDodge = clock::now();
+        auto nextAttack = clock::now();
+        while(!quitting.load())
+        {
+            // dispatch queued control events
+            {
+                std::lock_guard<std::mutex> lk(eventsMu);
+                while(!pendingEvents.empty())
+                {
+                    ControlEvent ev = pendingEvents.front();
+                    pendingEvents.pop();
+                    controlEventHandler(ev);
+                }
+            }
 
-        loop.runEvery(0.01, [this]{this->moveAll();});
+            auto now = clock::now();
+            if(now >= nextMove)
+            {
+                moveAll();
+                nextMove = now + std::chrono::milliseconds(10);
+            }
+            if(pendingRestart.load() && now >= restartAt)
+            {
+                resetState();
+                pendingRestart.store(false);
+            }
+            if(now >= nextDodge)
+            {
+                Object::PosInfo smithPos;
+                if(getSmithPosition(smithPos))
+                {
+                    AgentSmith::PredictingShellList shells = smith->getIncomingShells(smithPos);
+                    smith->ballisticsPredict(shells, globalSteps);
+                    smith->getDodgeStrategy(smithPos, globalSteps);
+                }
+                nextDodge = now + std::chrono::milliseconds(100);
+            }
+            if(now >= nextAttack)
+            {
+                Object::PosInfo smithPos, myPos;
+                if(getSmithPosition(smithPos) && getMyPosition(myPos))
+                    smith->attack(smithPos, myPos, globalSteps);
+                nextAttack = now + std::chrono::milliseconds(800);
+            }
 
-        loop.runEvery(0.1, [this]() -> void {
-            Object::PosInfo smithPos;
-            if(!getSmithPosition(smithPos)) return;
-            AgentSmith::PredictingShellList shells = smith->getIncomingShells(smithPos);
-            smith->ballisticsPredict(shells, globalSteps);
-            smith->getDodgeStrategy(smithPos, globalSteps);
-        });
-
-        loop.runEvery(0.8, [this] () -> void {
-            Object::PosInfo smithPos, myPos;
-            if(!getSmithPosition(smithPos) || !getMyPosition(myPos)) return;
-            smith->attack(smithPos, myPos, globalSteps);
-        });
-
-        loop.loop();
-        controlLoop = nullptr;
+            std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        }
     }
 
     bool LocalController::getSmithPosition(Object::PosInfo& pos)
@@ -145,10 +176,10 @@ namespace TankTrouble
         return pos;
     }
 
-    void LocalController::controlEventHandler(ev::Event *event)
+    void LocalController::controlEventHandler(const ControlEvent &event)
     {
         if(objects.find(PLAYER_TANK_ID) == objects.end()) return;
-        auto* ce = dynamic_cast<ControlEvent*>(event);
+        const ControlEvent* ce = &event;
         Tank* me = dynamic_cast<Tank*>(objects[PLAYER_TANK_ID].get());
         switch (ce->operation())
         {
@@ -188,7 +219,7 @@ namespace TankTrouble
 
     void LocalController::moveAll()
     {
-        ev::reactor::Timestamp before = ev::reactor::Timestamp::now();
+        // removed timestamp measurement in local mode
         globalSteps++;
         deletedObjs.clear();
         bool attacking = false;
@@ -274,8 +305,18 @@ namespace TankTrouble
                 (*snapshot)[obj->id()] = std::unique_ptr<Object>(
                         new Shell(*dynamic_cast<Shell*>(obj.get())));
         }
-        ev::reactor::Timestamp after = ev::reactor::Timestamp::now();
-        //std::cout << (after - before)<< std::endl;
+        // no timing log
+    }
+
+    void LocalController::dispatchEvent(const ControlEvent &event)
+    {
+        std::lock_guard<std::mutex> lk(eventsMu);
+        pendingEvents.push(event);
+    }
+
+    void LocalController::quitGame()
+    {
+        quitting.store(true);
     }
 
     int LocalController::checkShellCollision(const Object::PosInfo& curPos, const Object::PosInfo& nextPos)

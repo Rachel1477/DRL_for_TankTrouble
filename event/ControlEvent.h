@@ -4,11 +4,10 @@
 
 #ifndef TANK_TROUBLE_CONTROL_EVENT_H
 #define TANK_TROUBLE_CONTROL_EVENT_H
-#include "reactor/Event.h"
 
 namespace TankTrouble
 {
-    class ControlEvent : public ev::Event
+    class ControlEvent
     {
     public:
         //前进，停止，后退，顺时针调头，逆时针调头
@@ -20,7 +19,7 @@ namespace TankTrouble
 
         explicit ControlEvent(Operation op);
         ControlEvent();
-        ~ControlEvent() override = default;
+        ~ControlEvent() = default;
         [[nodiscard]] Operation operation() const;
 
     private:

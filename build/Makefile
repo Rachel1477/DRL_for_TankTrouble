@@ -321,54 +321,6 @@ controller/LocalController.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/controller/LocalController.cc.s
 .PHONY : controller/LocalController.cc.s
 
-ev/ev/reactor/EventLoop.o: ev/ev/reactor/EventLoop.cc.o
-.PHONY : ev/ev/reactor/EventLoop.o
-
-# target to build an object file
-ev/ev/reactor/EventLoop.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.o
-.PHONY : ev/ev/reactor/EventLoop.cc.o
-
-ev/ev/reactor/EventLoop.i: ev/ev/reactor/EventLoop.cc.i
-.PHONY : ev/ev/reactor/EventLoop.i
-
-# target to preprocess a source file
-ev/ev/reactor/EventLoop.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.i
-.PHONY : ev/ev/reactor/EventLoop.cc.i
-
-ev/ev/reactor/EventLoop.s: ev/ev/reactor/EventLoop.cc.s
-.PHONY : ev/ev/reactor/EventLoop.s
-
-# target to generate assembly for a file
-ev/ev/reactor/EventLoop.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/ev/ev/reactor/EventLoop.cc.s
-.PHONY : ev/ev/reactor/EventLoop.cc.s
-
-ev/ev/reactor/Timestamp.o: ev/ev/reactor/Timestamp.cc.o
-.PHONY : ev/ev/reactor/Timestamp.o
-
-# target to build an object file
-ev/ev/reactor/Timestamp.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.o
-.PHONY : ev/ev/reactor/Timestamp.cc.o
-
-ev/ev/reactor/Timestamp.i: ev/ev/reactor/Timestamp.cc.i
-.PHONY : ev/ev/reactor/Timestamp.i
-
-# target to preprocess a source file
-ev/ev/reactor/Timestamp.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.i
-.PHONY : ev/ev/reactor/Timestamp.cc.i
-
-ev/ev/reactor/Timestamp.s: ev/ev/reactor/Timestamp.cc.s
-.PHONY : ev/ev/reactor/Timestamp.s
-
-# target to generate assembly for a file
-ev/ev/reactor/Timestamp.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/ev/ev/reactor/Timestamp.cc.s
-.PHONY : ev/ev/reactor/Timestamp.cc.s
-
 event/ControlEvent.o: event/ControlEvent.cc.o
 .PHONY : event/ControlEvent.o
 
@@ -738,12 +690,6 @@ help:
 	@echo "... controller/LocalController.o"
 	@echo "... controller/LocalController.i"
 	@echo "... controller/LocalController.s"
-	@echo "... ev/ev/reactor/EventLoop.o"
-	@echo "... ev/ev/reactor/EventLoop.i"
-	@echo "... ev/ev/reactor/EventLoop.s"
-	@echo "... ev/ev/reactor/Timestamp.o"
-	@echo "... ev/ev/reactor/Timestamp.i"
-	@echo "... ev/ev/reactor/Timestamp.s"
 	@echo "... event/ControlEvent.o"
 	@echo "... event/ControlEvent.i"
 	@echo "... event/ControlEvent.s"

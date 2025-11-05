@@ -96,31 +96,31 @@ namespace TankTrouble
         if(!KeyUpPressed && key_event->keyval == GDK_KEY_Up)
         {
             KeyUpPressed = true;
-            auto* event = new ControlEvent(ControlEvent::Forward);
+            ControlEvent event(ControlEvent::Forward);
             ctl->dispatchEvent(event);
         }
         else if(!KeyDownPressed && key_event->keyval == GDK_KEY_Down)
         {
             KeyDownPressed = true;
-            auto* event = new ControlEvent(ControlEvent::Backward);
+            ControlEvent event(ControlEvent::Backward);
             ctl->dispatchEvent(event);
         }
         else if(!KeyLeftPressed && key_event->keyval == GDK_KEY_Left)
         {
             KeyLeftPressed = true;
-            auto* event = new ControlEvent(ControlEvent::RotateCCW);
+            ControlEvent event(ControlEvent::RotateCCW);
             ctl->dispatchEvent(event);
         }
         else if(!KeyRightPressed && key_event->keyval == GDK_KEY_Right)
         {
             KeyRightPressed = true;
-            auto* event = new ControlEvent(ControlEvent::RotateCW);
+            ControlEvent event(ControlEvent::RotateCW);
             ctl->dispatchEvent(event);
         }
         else if(!spacePressed && key_event->keyval == GDK_KEY_space)
         {
             spacePressed = true;
-            auto* event = new ControlEvent(ControlEvent::Fire);
+            ControlEvent event(ControlEvent::Fire);
             ctl->dispatchEvent(event);
         }
         return Gtk::Window::on_key_press_event(key_event);
@@ -133,25 +133,25 @@ namespace TankTrouble
         if(key_event->keyval == GDK_KEY_Up)
         {
             KeyUpPressed = false;
-            auto* event = new ControlEvent(ControlEvent::StopForward);
+            ControlEvent event(ControlEvent::StopForward);
             ctl->dispatchEvent(event);
         }
         else if(key_event->keyval == GDK_KEY_Down)
         {
             KeyDownPressed = false;
-            auto* event = new ControlEvent(ControlEvent::StopBackward);
+            ControlEvent event(ControlEvent::StopBackward);
             ctl->dispatchEvent(event);
         }
         else if(key_event->keyval == GDK_KEY_Left)
         {
             KeyLeftPressed = false;
-            auto* event = new ControlEvent(ControlEvent::StopRotateCCW);
+            ControlEvent event(ControlEvent::StopRotateCCW);
             ctl->dispatchEvent(event);
         }
         else if(key_event->keyval == GDK_KEY_Right)
         {
             KeyRightPressed = false;
-            auto* event = new ControlEvent(ControlEvent::StopRotateCW);
+            ControlEvent event(ControlEvent::StopRotateCW);
             ctl->dispatchEvent(event);
         }
         else if(key_event->keyval == GDK_KEY_space) {spacePressed = false;}
