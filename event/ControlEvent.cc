@@ -7,7 +7,6 @@
 namespace TankTrouble
 {
     ControlEvent::ControlEvent(ControlEvent::Operation op):
-        ev::Event("ControlEvent", 1),
         op(op) {}
 
     ControlEvent::ControlEvent(): ControlEvent(StopForward){}

@@ -6,11 +6,9 @@
 
 #include <memory>
 #include "view/GameView.h"
-#include "view/GameLobby.h"
 #include "defs.h"
 #include "event/ControlEvent.h"
 #include "controller/LocalController.h"
-#include "controller/OnlineController.h"
 
 namespace TankTrouble
 {
@@ -25,8 +23,6 @@ namespace TankTrouble
         set_resizable(false);
         add_events(Gdk::KEY_PRESS_MASK | Gdk::KEY_RELEASE_MASK);
         entryView.signal_choose_local().connect(sigc::mem_fun(*this, &Window::onUserChooseLocal));
-        entryView.signal_choose_online().connect(sigc::mem_fun(*this, &Window::onUserChooseOnline));
-        loginView.signal_login_clicked().connect(sigc::mem_fun(*this, &Window::onUserLogin));
         add(entryView);
 
         loginSuccessNotifier.connect(sigc::mem_fun(*this, &Window::onLoginSuccess));
@@ -56,26 +52,12 @@ namespace TankTrouble
         gameView->show();
     }
 
-    void Window::onUserChooseOnline()
-    {
-        remove();
-        ctl = std::make_unique<OnlineController>(this, Inet4Address("110.40.210.125", 8080));
-        ctl->start();
-        add(loginView);
-        loginView.show();
-    }
-
-    void Window::onUserLogin(const std::string& nickname)
-    {
-        auto* onlineController = dynamic_cast<OnlineController*>(ctl.get());
-        onlineController->login(nickname);
-    }
+    
 
     void Window::toEntryView()
     {
         remove();
         if(gameView) gameView.reset();
-        if(gameLobby) gameLobby.reset();
         if(ctl) ctl.reset();
         add(entryView);
         entryView.show();
@@ -83,18 +65,12 @@ namespace TankTrouble
 
     void Window::onLoginSuccess()
     {
-        remove();
-        auto* onlineController = dynamic_cast<OnlineController*>(ctl.get());
-        gameLobby = std::make_unique<GameLobby>(onlineController);
-        gameLobby->signal_logout().connect(sigc::mem_fun(*this, &Window::toEntryView));
-        add(*gameLobby);
-        gameLobby->show();
+        // no-op in local-only mode
     }
 
     void Window::onRoomsUpdate()
     {
-        if(gameLobby)
-            gameLobby->getRoomInfo();
+        // no-op in local-only mode
     }
 
     void Window::onGameBegin()
@@ -109,12 +85,8 @@ namespace TankTrouble
 
     void Window::onGameOff()
     {
-        if(!gameLobby)
-            return;
-        remove();
-        add(*gameLobby);
-        gameLobby->show();
-        gameLobby->getRoomInfo();
+        // on quitting local game, return to entry view
+        toEntryView();
     }
 
     bool Window::on_key_press_event(GdkEventKey* key_event)

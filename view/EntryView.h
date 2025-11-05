@@ -13,17 +13,13 @@ namespace TankTrouble
     public:
         EntryView();
         sigc::signal<void> signal_choose_local();
-        sigc::signal<void> signal_choose_online();
 
     private:
         void choose_local();
-        void choose_online();
 
         Gtk::Image bg;
         Gtk::Button localBtn;
-        Gtk::Button onlineBtn;
         sigc::signal<void> choose_local_s;
-        sigc::signal<void> choose_online_s;
     };
 }
 

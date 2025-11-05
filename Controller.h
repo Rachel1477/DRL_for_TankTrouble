@@ -15,6 +15,7 @@
 #include "Block.h"
 #include "controller/Data.h"
 #include "reactor/EventLoop.h"
+#include "reactor/Event.h"
 
 namespace TankTrouble
 {

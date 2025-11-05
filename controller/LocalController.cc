@@ -188,7 +188,7 @@ namespace TankTrouble
 
     void LocalController::moveAll()
     {
-        ev::Timestamp before = ev::Timestamp::now();
+        ev::reactor::Timestamp before = ev::reactor::Timestamp::now();
         globalSteps++;
         deletedObjs.clear();
         bool attacking = false;
@@ -274,7 +274,7 @@ namespace TankTrouble
                 (*snapshot)[obj->id()] = std::unique_ptr<Object>(
                         new Shell(*dynamic_cast<Shell*>(obj.get())));
         }
-        ev::Timestamp after = ev::Timestamp::now();
+        ev::reactor::Timestamp after = ev::reactor::Timestamp::now();
         //std::cout << (after - before)<< std::endl;
     }
 

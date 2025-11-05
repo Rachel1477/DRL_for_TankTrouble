@@ -1,0 +1,3 @@
+/home/rachel/CLionProjects/TankTrouble/build/CMakeFiles/TankTrouble.dir
+/home/rachel/CLionProjects/TankTrouble/build/CMakeFiles/edit_cache.dir
+/home/rachel/CLionProjects/TankTrouble/build/CMakeFiles/rebuild_cache.dir

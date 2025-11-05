@@ -7,13 +7,12 @@
 #include <gtkmm.h>
 #include <memory>
 #include "view/EntryView.h"
-#include "view/LoginView.h"
 #include "Controller.h"
 
 namespace TankTrouble
 {
     class GameView;
-    class GameLobby;
+    
 
     class Window : public Gtk::Window
     {
@@ -31,8 +30,6 @@ namespace TankTrouble
     private:
 
         void onUserChooseLocal();
-        void onUserChooseOnline();
-        void onUserLogin(const std::string& nickname);
         void toEntryView();
 
         void onLoginSuccess();
@@ -42,9 +39,7 @@ namespace TankTrouble
 
         std::unique_ptr<Controller> ctl;
         std::unique_ptr<GameView> gameView;
-        std::unique_ptr<GameLobby> gameLobby;
         EntryView entryView;
-        LoginView loginView;
 
         Glib::Dispatcher loginSuccessNotifier;
         Glib::Dispatcher roomUpdateNotifier;
