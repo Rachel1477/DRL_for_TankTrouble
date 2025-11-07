@@ -102,6 +102,9 @@ namespace TankTrouble
         auto last_log = std::chrono::steady_clock::now();
         int step_count = 0;
         
+        std::vector<double> prev_state;
+        int prev_action = 0;
+        
         while(training_active_.load())
         {
             int action = 0;
@@ -111,11 +114,26 @@ namespace TankTrouble
                 if(step_count == 0) std::cout << "[RL] agentLoop: Building first state..." << std::endl;
                 std::vector<double> s = buildState();
                 if(step_count == 0) std::cout << "[RL] agentLoop: First state built, size=" << s.size() << std::endl;
-                if(s.empty() || s.size() != 57)
+                if(s.empty() || s.size() != 122)  // Updated state size
                 {
                     std::cerr << "[RL] agentLoop: Invalid state size: " << s.size() << std::endl;
                     std::this_thread::sleep_for(50ms);
                     continue;
+                }
+                
+                // Calculate reward from previous step (if exists)
+                double dprog=0, aprog=0, spin=0, stepc=0;
+                double r = dbgComputeReward(dprog, aprog, spin, stepc);
+                
+                // If we have a previous state, send the experience to Python
+                if(step_count > 0 && step_cb_ && !prev_state.empty())
+                {
+                    try {
+                        bool done = false;  // Will be detected by episode_end callback
+                        step_cb_(prev_state, prev_action, r, s, done);
+                    } catch(const std::exception& e) {
+                        // Silently ignore step callback errors
+                    }
                 }
                 
                 // If Python callback provided, use it
@@ -144,9 +162,9 @@ namespace TankTrouble
 
                 applyAgentAction(action);
                 
-                // debugging: compute reward components and log
-                double dprog=0, aprog=0, spin=0, stepc=0;
-                double r = dbgComputeReward(dprog, aprog, spin, stepc);
+                // Store for next iteration
+                prev_state = s;
+                prev_action = action;
                 
                 step_count++;
                 if(step_count % 20 == 0 || step_count <= 5)  // Log first 5 steps and every 20th step
@@ -268,14 +286,14 @@ namespace TankTrouble
         }
     }
 
-    // Build 57-dim state like TankEnv
+    // Build 122-dim state like TankEnv (updated with map grid)
     std::vector<double> RLController::buildState()
     {
         std::vector<double> state;
         auto objsPtr = getObjects();
         auto& objs = *objsPtr;
         if(objs.find(PLAYER_TANK_ID) == objs.end() || objs.find(AI_TANK_ID) == objs.end())
-            return std::vector<double>(57, 0.0);
+            return std::vector<double>(122, 0.0);  // Updated dimension
 
         auto* me = dynamic_cast<Tank*>(objs[PLAYER_TANK_ID].get());
         auto* enemy = dynamic_cast<Tank*>(objs[AI_TANK_ID].get());
@@ -296,9 +314,37 @@ namespace TankTrouble
         double se = std::sin(en.angle * M_PI / 180.0), ce = std::cos(en.angle * M_PI / 180.0);
         state.push_back(se); state.push_back(ce);
 
+        // Global map grid (8x8 = 64 cells)
+        const int MAP_GRID_SIZE = 8;
+        const double CELL_WIDTH = GAME_VIEW_WIDTH / MAP_GRID_SIZE;
+        const double CELL_HEIGHT = GAME_VIEW_HEIGHT / MAP_GRID_SIZE;
+        auto* blocks = getBlocks();
+        std::vector<double> map_grid(MAP_GRID_SIZE * MAP_GRID_SIZE, 0.0);
+        for (const auto& kv : *blocks)
+        {
+            const Block& b = kv.second;
+            auto bc = b.center();
+            double bw = b.width();
+            double bh = b.height();
+            int min_gx = std::max(0, static_cast<int>((bc.x() - bw/2) / CELL_WIDTH));
+            int max_gx = std::min(static_cast<int>(MAP_GRID_SIZE-1), static_cast<int>((bc.x() + bw/2) / CELL_WIDTH));
+            int min_gy = std::max(0, static_cast<int>((bc.y() - bh/2) / CELL_HEIGHT));
+            int max_gy = std::min(static_cast<int>(MAP_GRID_SIZE-1), static_cast<int>((bc.y() + bh/2) / CELL_HEIGHT));
+            for (int gy = min_gy; gy <= max_gy; gy++)
+            {
+                for (int gx = min_gx; gx <= max_gx; gx++)
+                {
+                    map_grid[gy * MAP_GRID_SIZE + gx] = 1.0;
+                }
+            }
+        }
+        state.insert(state.end(), map_grid.begin(), map_grid.end());
+        
+        // Line-of-sight flag (placeholder: always 0 for now in RLController)
+        state.push_back(0.0);  // Can implement hasDirectLineToEnemy if needed
+
         // Rays
         const int NUM_RAYS = 16; const double MAX_DIST = std::hypot(GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT);
-        auto* blocks = getBlocks();
         for(int i = 0; i < NUM_RAYS; i++)
         {
             double ang = (360.0 / NUM_RAYS) * i; double rad = ang * M_PI / 180.0;

@@ -12,13 +12,7 @@ PYBIND11_MODULE(tank_trouble_env, m)
     py::class_<TankEnv>(m, "TankEnv")
         .def(py::init<>())
         .def("reset", &TankEnv::reset)
-        .def("step", &TankEnv::step)
-        .def("set_reward_config", [](TankEnv& env, py::dict d){
-            std::unordered_map<std::string, double> m;
-            for(auto item : d)
-                m[item.first.cast<std::string>()] = item.second.cast<double>();
-            env.setRewardConfig(m);
-        });
+        .def("step", &TankEnv::step);
 
     py::enum_<TankEnv::Action>(m, "Action")
         .value("DO_NOTHING", TankEnv::Action::DO_NOTHING)

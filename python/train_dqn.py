@@ -23,20 +23,31 @@ Experience = namedtuple('Experience', ['state', 'action', 'reward', 'next_state'
 
 
 class QNetwork(nn.Module):
-    """Q-Network for DQN"""
+    """Enhanced Q-Network for DQN with larger capacity for complex state space"""
     
     def __init__(self, state_size: int, action_size: int, seed: int = 0):
         super(QNetwork, self).__init__()
         self.seed = torch.manual_seed(seed)
         
-        self.fc1 = nn.Linear(state_size, 128)
-        self.fc2 = nn.Linear(128, 128)
-        self.fc3 = nn.Linear(128, action_size)
+        # Deeper network to handle 57-dim complex state (9 base + 48 ray features)
+        self.fc1 = nn.Linear(state_size, 256)
+        self.fc2 = nn.Linear(256, 256)
+        self.fc3 = nn.Linear(256, 128)
+        self.fc4 = nn.Linear(128, action_size)
+        
+        # Batch normalization for stable training
+        self.bn1 = nn.BatchNorm1d(256)
+        self.bn2 = nn.BatchNorm1d(256)
         
     def forward(self, state):
-        x = F.relu(self.fc1(state))
-        x = F.relu(self.fc2(x))
-        return self.fc3(x)
+        # Handle both single state and batch
+        if state.dim() == 1:
+            state = state.unsqueeze(0)
+            
+        x = F.relu(self.bn1(self.fc1(state)))
+        x = F.relu(self.bn2(self.fc2(x)))
+        x = F.relu(self.fc3(x))
+        return self.fc4(x)
 
 
 class ReplayBuffer:

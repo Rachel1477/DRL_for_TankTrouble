@@ -43,6 +43,10 @@ namespace TankTrouble
         void start() override;
         void dispatchEvent(const ControlEvent& event) override;
         void quitGame() override;
+        
+        // Methods for RL environment (synchronous stepping)
+        void resetImmediate();
+        void stepOnce();
 
     private:
         void restart(double delay);

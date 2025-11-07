@@ -30,6 +30,7 @@ namespace TankTrouble
     private:
 
         void onUserChooseLocal();
+        void onUserChooseRLTraining();
         void toEntryView();
 
         void onLoginSuccess();

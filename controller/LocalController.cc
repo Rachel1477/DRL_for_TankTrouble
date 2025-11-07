@@ -319,6 +319,44 @@ namespace TankTrouble
         quitting.store(true);
     }
 
+    void LocalController::resetImmediate()
+    {
+        resetState();
+    }
+
+    void LocalController::stepOnce()
+    {
+        // Dispatch queued control events
+        {
+            std::lock_guard<std::mutex> lk(eventsMu);
+            while(!pendingEvents.empty())
+            {
+                ControlEvent ev = pendingEvents.front();
+                pendingEvents.pop();
+                controlEventHandler(ev);
+            }
+        }
+        
+        // Update AI strategies (simplified version for RL, without timing constraints)
+        // This mimics the logic in run() but without time-based scheduling
+        Object::PosInfo smithPos;
+        if(getSmithPosition(smithPos))
+        {
+            AgentSmith::PredictingShellList shells = smith->getIncomingShells(smithPos);
+            smith->ballisticsPredict(shells, globalSteps);
+            smith->getDodgeStrategy(smithPos, globalSteps);
+        }
+        
+        Object::PosInfo smithPos2, myPos;
+        if(getSmithPosition(smithPos2) && getMyPosition(myPos))
+        {
+            smith->attack(smithPos2, myPos, globalSteps);
+        }
+        
+        // Move all objects (this also updates AI strategies within moveAll)
+        moveAll();
+    }
+
     int LocalController::checkShellCollision(const Object::PosInfo& curPos, const Object::PosInfo& nextPos)
     {
         int collisionBlock = checkShellBlockCollision(curPos, nextPos);

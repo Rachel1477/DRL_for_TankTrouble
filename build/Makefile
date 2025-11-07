@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rachel/CLionProjects/TankTrouble
+CMAKE_SOURCE_DIR = /home/rachel/CLionProjects/DRL_for_TankTrouble
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rachel/CLionProjects/TankTrouble/build
+CMAKE_BINARY_DIR = /home/rachel/CLionProjects/DRL_for_TankTrouble/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/rachel/CLionProjects/TankTrouble/build/CMakeFiles /home/rachel/CLionProjects/TankTrouble/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/rachel/CLionProjects/DRL_for_TankTrouble/build/CMakeFiles /home/rachel/CLionProjects/DRL_for_TankTrouble/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/rachel/CLionProjects/TankTrouble/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/rachel/CLionProjects/DRL_for_TankTrouble/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -129,12 +129,40 @@ TankTrouble/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/build
 .PHONY : TankTrouble/fast
 
+#=============================================================================
+# Target rules for targets named tank_trouble_env
+
+# Build rule for target.
+tank_trouble_env: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tank_trouble_env
+.PHONY : tank_trouble_env
+
+# fast build rule for target.
+tank_trouble_env/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/build
+.PHONY : tank_trouble_env/fast
+
+#=============================================================================
+# Target rules for targets named rl_controller
+
+# Build rule for target.
+rl_controller: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 rl_controller
+.PHONY : rl_controller
+
+# fast build rule for target.
+rl_controller/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/build
+.PHONY : rl_controller/fast
+
 Block.o: Block.cc.o
 .PHONY : Block.o
 
 # target to build an object file
 Block.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Block.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Block.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Block.cc.o
 .PHONY : Block.cc.o
 
 Block.i: Block.cc.i
@@ -143,6 +171,8 @@ Block.i: Block.cc.i
 # target to preprocess a source file
 Block.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Block.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Block.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Block.cc.i
 .PHONY : Block.cc.i
 
 Block.s: Block.cc.s
@@ -151,6 +181,8 @@ Block.s: Block.cc.s
 # target to generate assembly for a file
 Block.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Block.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Block.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Block.cc.s
 .PHONY : Block.cc.s
 
 Controller.o: Controller.cc.o
@@ -159,6 +191,8 @@ Controller.o: Controller.cc.o
 # target to build an object file
 Controller.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Controller.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Controller.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Controller.cc.o
 .PHONY : Controller.cc.o
 
 Controller.i: Controller.cc.i
@@ -167,6 +201,8 @@ Controller.i: Controller.cc.i
 # target to preprocess a source file
 Controller.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Controller.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Controller.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Controller.cc.i
 .PHONY : Controller.cc.i
 
 Controller.s: Controller.cc.s
@@ -175,6 +211,8 @@ Controller.s: Controller.cc.s
 # target to generate assembly for a file
 Controller.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Controller.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Controller.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Controller.cc.s
 .PHONY : Controller.cc.s
 
 Maze.o: Maze.cc.o
@@ -183,6 +221,8 @@ Maze.o: Maze.cc.o
 # target to build an object file
 Maze.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Maze.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Maze.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Maze.cc.o
 .PHONY : Maze.cc.o
 
 Maze.i: Maze.cc.i
@@ -191,6 +231,8 @@ Maze.i: Maze.cc.i
 # target to preprocess a source file
 Maze.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Maze.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Maze.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Maze.cc.i
 .PHONY : Maze.cc.i
 
 Maze.s: Maze.cc.s
@@ -199,6 +241,8 @@ Maze.s: Maze.cc.s
 # target to generate assembly for a file
 Maze.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Maze.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Maze.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Maze.cc.s
 .PHONY : Maze.cc.s
 
 Object.o: Object.cc.o
@@ -207,6 +251,8 @@ Object.o: Object.cc.o
 # target to build an object file
 Object.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Object.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Object.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Object.cc.o
 .PHONY : Object.cc.o
 
 Object.i: Object.cc.i
@@ -215,6 +261,8 @@ Object.i: Object.cc.i
 # target to preprocess a source file
 Object.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Object.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Object.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Object.cc.i
 .PHONY : Object.cc.i
 
 Object.s: Object.cc.s
@@ -223,6 +271,8 @@ Object.s: Object.cc.s
 # target to generate assembly for a file
 Object.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Object.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Object.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Object.cc.s
 .PHONY : Object.cc.s
 
 Shell.o: Shell.cc.o
@@ -231,6 +281,8 @@ Shell.o: Shell.cc.o
 # target to build an object file
 Shell.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Shell.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Shell.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Shell.cc.o
 .PHONY : Shell.cc.o
 
 Shell.i: Shell.cc.i
@@ -239,6 +291,8 @@ Shell.i: Shell.cc.i
 # target to preprocess a source file
 Shell.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Shell.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Shell.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Shell.cc.i
 .PHONY : Shell.cc.i
 
 Shell.s: Shell.cc.s
@@ -247,6 +301,8 @@ Shell.s: Shell.cc.s
 # target to generate assembly for a file
 Shell.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Shell.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Shell.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Shell.cc.s
 .PHONY : Shell.cc.s
 
 Tank.o: Tank.cc.o
@@ -255,6 +311,8 @@ Tank.o: Tank.cc.o
 # target to build an object file
 Tank.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Tank.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Tank.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Tank.cc.o
 .PHONY : Tank.cc.o
 
 Tank.i: Tank.cc.i
@@ -263,6 +321,8 @@ Tank.i: Tank.cc.i
 # target to preprocess a source file
 Tank.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Tank.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Tank.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Tank.cc.i
 .PHONY : Tank.cc.i
 
 Tank.s: Tank.cc.s
@@ -271,6 +331,8 @@ Tank.s: Tank.cc.s
 # target to generate assembly for a file
 Tank.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Tank.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/Tank.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/Tank.cc.s
 .PHONY : Tank.cc.s
 
 Window.o: Window.cc.o
@@ -297,12 +359,62 @@ Window.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/Window.cc.s
 .PHONY : Window.cc.s
 
+bindings/bindings.o: bindings/bindings.cc.o
+.PHONY : bindings/bindings.o
+
+# target to build an object file
+bindings/bindings.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/bindings/bindings.cc.o
+.PHONY : bindings/bindings.cc.o
+
+bindings/bindings.i: bindings/bindings.cc.i
+.PHONY : bindings/bindings.i
+
+# target to preprocess a source file
+bindings/bindings.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/bindings/bindings.cc.i
+.PHONY : bindings/bindings.cc.i
+
+bindings/bindings.s: bindings/bindings.cc.s
+.PHONY : bindings/bindings.s
+
+# target to generate assembly for a file
+bindings/bindings.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/bindings/bindings.cc.s
+.PHONY : bindings/bindings.cc.s
+
+bindings/rl_bindings.o: bindings/rl_bindings.cc.o
+.PHONY : bindings/rl_bindings.o
+
+# target to build an object file
+bindings/rl_bindings.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/bindings/rl_bindings.cc.o
+.PHONY : bindings/rl_bindings.cc.o
+
+bindings/rl_bindings.i: bindings/rl_bindings.cc.i
+.PHONY : bindings/rl_bindings.i
+
+# target to preprocess a source file
+bindings/rl_bindings.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/bindings/rl_bindings.cc.i
+.PHONY : bindings/rl_bindings.cc.i
+
+bindings/rl_bindings.s: bindings/rl_bindings.cc.s
+.PHONY : bindings/rl_bindings.s
+
+# target to generate assembly for a file
+bindings/rl_bindings.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/bindings/rl_bindings.cc.s
+.PHONY : bindings/rl_bindings.cc.s
+
 controller/LocalController.o: controller/LocalController.cc.o
 .PHONY : controller/LocalController.o
 
 # target to build an object file
 controller/LocalController.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/controller/LocalController.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/controller/LocalController.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/controller/LocalController.cc.o
 .PHONY : controller/LocalController.cc.o
 
 controller/LocalController.i: controller/LocalController.cc.i
@@ -311,6 +423,8 @@ controller/LocalController.i: controller/LocalController.cc.i
 # target to preprocess a source file
 controller/LocalController.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/controller/LocalController.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/controller/LocalController.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/controller/LocalController.cc.i
 .PHONY : controller/LocalController.cc.i
 
 controller/LocalController.s: controller/LocalController.cc.s
@@ -319,7 +433,39 @@ controller/LocalController.s: controller/LocalController.cc.s
 # target to generate assembly for a file
 controller/LocalController.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/controller/LocalController.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/controller/LocalController.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/controller/LocalController.cc.s
 .PHONY : controller/LocalController.cc.s
+
+controller/RLController.o: controller/RLController.cc.o
+.PHONY : controller/RLController.o
+
+# target to build an object file
+controller/RLController.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/controller/RLController.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/controller/RLController.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/controller/RLController.cc.o
+.PHONY : controller/RLController.cc.o
+
+controller/RLController.i: controller/RLController.cc.i
+.PHONY : controller/RLController.i
+
+# target to preprocess a source file
+controller/RLController.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/controller/RLController.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/controller/RLController.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/controller/RLController.cc.i
+.PHONY : controller/RLController.cc.i
+
+controller/RLController.s: controller/RLController.cc.s
+.PHONY : controller/RLController.s
+
+# target to generate assembly for a file
+controller/RLController.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/controller/RLController.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/controller/RLController.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/controller/RLController.cc.s
+.PHONY : controller/RLController.cc.s
 
 event/ControlEvent.o: event/ControlEvent.cc.o
 .PHONY : event/ControlEvent.o
@@ -327,6 +473,8 @@ event/ControlEvent.o: event/ControlEvent.cc.o
 # target to build an object file
 event/ControlEvent.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/event/ControlEvent.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/event/ControlEvent.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/event/ControlEvent.cc.o
 .PHONY : event/ControlEvent.cc.o
 
 event/ControlEvent.i: event/ControlEvent.cc.i
@@ -335,6 +483,8 @@ event/ControlEvent.i: event/ControlEvent.cc.i
 # target to preprocess a source file
 event/ControlEvent.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/event/ControlEvent.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/event/ControlEvent.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/event/ControlEvent.cc.i
 .PHONY : event/ControlEvent.cc.i
 
 event/ControlEvent.s: event/ControlEvent.cc.s
@@ -343,6 +493,8 @@ event/ControlEvent.s: event/ControlEvent.cc.s
 # target to generate assembly for a file
 event/ControlEvent.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/event/ControlEvent.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/event/ControlEvent.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/event/ControlEvent.cc.s
 .PHONY : event/ControlEvent.cc.s
 
 main.o: main.cc.o
@@ -369,12 +521,38 @@ main.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/main.cc.s
 .PHONY : main.cc.s
 
+rl/TankEnv.o: rl/TankEnv.cc.o
+.PHONY : rl/TankEnv.o
+
+# target to build an object file
+rl/TankEnv.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/rl/TankEnv.cc.o
+.PHONY : rl/TankEnv.cc.o
+
+rl/TankEnv.i: rl/TankEnv.cc.i
+.PHONY : rl/TankEnv.i
+
+# target to preprocess a source file
+rl/TankEnv.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/rl/TankEnv.cc.i
+.PHONY : rl/TankEnv.cc.i
+
+rl/TankEnv.s: rl/TankEnv.cc.s
+.PHONY : rl/TankEnv.s
+
+# target to generate assembly for a file
+rl/TankEnv.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/rl/TankEnv.cc.s
+.PHONY : rl/TankEnv.cc.s
+
 smithAI/AStar.o: smithAI/AStar.cc.o
 .PHONY : smithAI/AStar.o
 
 # target to build an object file
 smithAI/AStar.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/smithAI/AStar.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/smithAI/AStar.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/smithAI/AStar.cc.o
 .PHONY : smithAI/AStar.cc.o
 
 smithAI/AStar.i: smithAI/AStar.cc.i
@@ -383,6 +561,8 @@ smithAI/AStar.i: smithAI/AStar.cc.i
 # target to preprocess a source file
 smithAI/AStar.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/smithAI/AStar.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/smithAI/AStar.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/smithAI/AStar.cc.i
 .PHONY : smithAI/AStar.cc.i
 
 smithAI/AStar.s: smithAI/AStar.cc.s
@@ -391,6 +571,8 @@ smithAI/AStar.s: smithAI/AStar.cc.s
 # target to generate assembly for a file
 smithAI/AStar.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/smithAI/AStar.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/smithAI/AStar.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/smithAI/AStar.cc.s
 .PHONY : smithAI/AStar.cc.s
 
 smithAI/AgentSmith.o: smithAI/AgentSmith.cc.o
@@ -399,6 +581,8 @@ smithAI/AgentSmith.o: smithAI/AgentSmith.cc.o
 # target to build an object file
 smithAI/AgentSmith.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/smithAI/AgentSmith.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/smithAI/AgentSmith.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/smithAI/AgentSmith.cc.o
 .PHONY : smithAI/AgentSmith.cc.o
 
 smithAI/AgentSmith.i: smithAI/AgentSmith.cc.i
@@ -407,6 +591,8 @@ smithAI/AgentSmith.i: smithAI/AgentSmith.cc.i
 # target to preprocess a source file
 smithAI/AgentSmith.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/smithAI/AgentSmith.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/smithAI/AgentSmith.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/smithAI/AgentSmith.cc.i
 .PHONY : smithAI/AgentSmith.cc.i
 
 smithAI/AgentSmith.s: smithAI/AgentSmith.cc.s
@@ -415,6 +601,8 @@ smithAI/AgentSmith.s: smithAI/AgentSmith.cc.s
 # target to generate assembly for a file
 smithAI/AgentSmith.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/smithAI/AgentSmith.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/smithAI/AgentSmith.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/smithAI/AgentSmith.cc.s
 .PHONY : smithAI/AgentSmith.cc.s
 
 smithAI/AttackStrategy.o: smithAI/AttackStrategy.cc.o
@@ -423,6 +611,8 @@ smithAI/AttackStrategy.o: smithAI/AttackStrategy.cc.o
 # target to build an object file
 smithAI/AttackStrategy.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/smithAI/AttackStrategy.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/smithAI/AttackStrategy.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/smithAI/AttackStrategy.cc.o
 .PHONY : smithAI/AttackStrategy.cc.o
 
 smithAI/AttackStrategy.i: smithAI/AttackStrategy.cc.i
@@ -431,6 +621,8 @@ smithAI/AttackStrategy.i: smithAI/AttackStrategy.cc.i
 # target to preprocess a source file
 smithAI/AttackStrategy.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/smithAI/AttackStrategy.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/smithAI/AttackStrategy.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/smithAI/AttackStrategy.cc.i
 .PHONY : smithAI/AttackStrategy.cc.i
 
 smithAI/AttackStrategy.s: smithAI/AttackStrategy.cc.s
@@ -439,6 +631,8 @@ smithAI/AttackStrategy.s: smithAI/AttackStrategy.cc.s
 # target to generate assembly for a file
 smithAI/AttackStrategy.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/smithAI/AttackStrategy.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/smithAI/AttackStrategy.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/smithAI/AttackStrategy.cc.s
 .PHONY : smithAI/AttackStrategy.cc.s
 
 smithAI/ContactStrategy.o: smithAI/ContactStrategy.cc.o
@@ -447,6 +641,8 @@ smithAI/ContactStrategy.o: smithAI/ContactStrategy.cc.o
 # target to build an object file
 smithAI/ContactStrategy.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/smithAI/ContactStrategy.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/smithAI/ContactStrategy.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/smithAI/ContactStrategy.cc.o
 .PHONY : smithAI/ContactStrategy.cc.o
 
 smithAI/ContactStrategy.i: smithAI/ContactStrategy.cc.i
@@ -455,6 +651,8 @@ smithAI/ContactStrategy.i: smithAI/ContactStrategy.cc.i
 # target to preprocess a source file
 smithAI/ContactStrategy.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/smithAI/ContactStrategy.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/smithAI/ContactStrategy.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/smithAI/ContactStrategy.cc.i
 .PHONY : smithAI/ContactStrategy.cc.i
 
 smithAI/ContactStrategy.s: smithAI/ContactStrategy.cc.s
@@ -463,6 +661,8 @@ smithAI/ContactStrategy.s: smithAI/ContactStrategy.cc.s
 # target to generate assembly for a file
 smithAI/ContactStrategy.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/smithAI/ContactStrategy.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/smithAI/ContactStrategy.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/smithAI/ContactStrategy.cc.s
 .PHONY : smithAI/ContactStrategy.cc.s
 
 smithAI/DodgeStrategy.o: smithAI/DodgeStrategy.cc.o
@@ -471,6 +671,8 @@ smithAI/DodgeStrategy.o: smithAI/DodgeStrategy.cc.o
 # target to build an object file
 smithAI/DodgeStrategy.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/smithAI/DodgeStrategy.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/smithAI/DodgeStrategy.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/smithAI/DodgeStrategy.cc.o
 .PHONY : smithAI/DodgeStrategy.cc.o
 
 smithAI/DodgeStrategy.i: smithAI/DodgeStrategy.cc.i
@@ -479,6 +681,8 @@ smithAI/DodgeStrategy.i: smithAI/DodgeStrategy.cc.i
 # target to preprocess a source file
 smithAI/DodgeStrategy.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/smithAI/DodgeStrategy.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/smithAI/DodgeStrategy.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/smithAI/DodgeStrategy.cc.i
 .PHONY : smithAI/DodgeStrategy.cc.i
 
 smithAI/DodgeStrategy.s: smithAI/DodgeStrategy.cc.s
@@ -487,6 +691,8 @@ smithAI/DodgeStrategy.s: smithAI/DodgeStrategy.cc.s
 # target to generate assembly for a file
 smithAI/DodgeStrategy.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/smithAI/DodgeStrategy.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/smithAI/DodgeStrategy.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/smithAI/DodgeStrategy.cc.s
 .PHONY : smithAI/DodgeStrategy.cc.s
 
 util/Id.o: util/Id.cc.o
@@ -495,6 +701,8 @@ util/Id.o: util/Id.cc.o
 # target to build an object file
 util/Id.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/util/Id.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/util/Id.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/util/Id.cc.o
 .PHONY : util/Id.cc.o
 
 util/Id.i: util/Id.cc.i
@@ -503,6 +711,8 @@ util/Id.i: util/Id.cc.i
 # target to preprocess a source file
 util/Id.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/util/Id.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/util/Id.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/util/Id.cc.i
 .PHONY : util/Id.cc.i
 
 util/Id.s: util/Id.cc.s
@@ -511,6 +721,8 @@ util/Id.s: util/Id.cc.s
 # target to generate assembly for a file
 util/Id.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/util/Id.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/util/Id.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/util/Id.cc.s
 .PHONY : util/Id.cc.s
 
 util/Math.o: util/Math.cc.o
@@ -519,6 +731,8 @@ util/Math.o: util/Math.cc.o
 # target to build an object file
 util/Math.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/util/Math.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/util/Math.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/util/Math.cc.o
 .PHONY : util/Math.cc.o
 
 util/Math.i: util/Math.cc.i
@@ -527,6 +741,8 @@ util/Math.i: util/Math.cc.i
 # target to preprocess a source file
 util/Math.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/util/Math.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/util/Math.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/util/Math.cc.i
 .PHONY : util/Math.cc.i
 
 util/Math.s: util/Math.cc.s
@@ -535,6 +751,8 @@ util/Math.s: util/Math.cc.s
 # target to generate assembly for a file
 util/Math.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/util/Math.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/util/Math.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/util/Math.cc.s
 .PHONY : util/Math.cc.s
 
 util/Vec.o: util/Vec.cc.o
@@ -543,6 +761,8 @@ util/Vec.o: util/Vec.cc.o
 # target to build an object file
 util/Vec.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/util/Vec.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/util/Vec.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/util/Vec.cc.o
 .PHONY : util/Vec.cc.o
 
 util/Vec.i: util/Vec.cc.i
@@ -551,6 +771,8 @@ util/Vec.i: util/Vec.cc.i
 # target to preprocess a source file
 util/Vec.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/util/Vec.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/util/Vec.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/util/Vec.cc.i
 .PHONY : util/Vec.cc.i
 
 util/Vec.s: util/Vec.cc.s
@@ -559,6 +781,8 @@ util/Vec.s: util/Vec.cc.s
 # target to generate assembly for a file
 util/Vec.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/util/Vec.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/util/Vec.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/util/Vec.cc.s
 .PHONY : util/Vec.cc.s
 
 view/EntryView.o: view/EntryView.cc.o
@@ -615,6 +839,8 @@ view/component/GameArea.o: view/component/GameArea.cc.o
 # target to build an object file
 view/component/GameArea.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/view/component/GameArea.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/view/component/GameArea.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/view/component/GameArea.cc.o
 .PHONY : view/component/GameArea.cc.o
 
 view/component/GameArea.i: view/component/GameArea.cc.i
@@ -623,6 +849,8 @@ view/component/GameArea.i: view/component/GameArea.cc.i
 # target to preprocess a source file
 view/component/GameArea.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/view/component/GameArea.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/view/component/GameArea.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/view/component/GameArea.cc.i
 .PHONY : view/component/GameArea.cc.i
 
 view/component/GameArea.s: view/component/GameArea.cc.s
@@ -631,6 +859,8 @@ view/component/GameArea.s: view/component/GameArea.cc.s
 # target to generate assembly for a file
 view/component/GameArea.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TankTrouble.dir/build.make CMakeFiles/TankTrouble.dir/view/component/GameArea.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tank_trouble_env.dir/build.make CMakeFiles/tank_trouble_env.dir/view/component/GameArea.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rl_controller.dir/build.make CMakeFiles/rl_controller.dir/view/component/GameArea.cc.s
 .PHONY : view/component/GameArea.cc.s
 
 view/component/PlayerInfoItem.o: view/component/PlayerInfoItem.cc.o
@@ -666,6 +896,8 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... TankTrouble"
+	@echo "... rl_controller"
+	@echo "... tank_trouble_env"
 	@echo "... Block.o"
 	@echo "... Block.i"
 	@echo "... Block.s"
@@ -687,15 +919,27 @@ help:
 	@echo "... Window.o"
 	@echo "... Window.i"
 	@echo "... Window.s"
+	@echo "... bindings/bindings.o"
+	@echo "... bindings/bindings.i"
+	@echo "... bindings/bindings.s"
+	@echo "... bindings/rl_bindings.o"
+	@echo "... bindings/rl_bindings.i"
+	@echo "... bindings/rl_bindings.s"
 	@echo "... controller/LocalController.o"
 	@echo "... controller/LocalController.i"
 	@echo "... controller/LocalController.s"
+	@echo "... controller/RLController.o"
+	@echo "... controller/RLController.i"
+	@echo "... controller/RLController.s"
 	@echo "... event/ControlEvent.o"
 	@echo "... event/ControlEvent.i"
 	@echo "... event/ControlEvent.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... rl/TankEnv.o"
+	@echo "... rl/TankEnv.i"
+	@echo "... rl/TankEnv.s"
 	@echo "... smithAI/AStar.o"
 	@echo "... smithAI/AStar.i"
 	@echo "... smithAI/AStar.s"

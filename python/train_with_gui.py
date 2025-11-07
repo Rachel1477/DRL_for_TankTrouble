@@ -33,39 +33,100 @@ except ImportError:
 _global_agent = None
 _global_episode_count = 0
 _global_model_path = "checkpoint_dqn_gui.pth"
+_prev_state = None
+_prev_action = None
+_episode_rewards = []
+_episode_step_count = 0
+
+def on_step(prev_state, prev_action, reward, next_state, done):
+    """Callback for each step - store experience in replay buffer"""
+    global _global_agent, _episode_rewards
+    if _global_agent is None:
+        return
+    
+    # Add experience to replay buffer
+    _global_agent.step(prev_state, prev_action, reward, next_state, done)
+    _episode_rewards.append(reward)
 
 def get_action_from_state(state):
-    """Callback function for C++ to get action from agent"""
-    global _global_agent
+    """Callback function for C++ to get action from agent
+    
+    This function is called by C++ agentLoop every 50ms.
+    """
+    global _global_agent, _global_episode_count, _prev_state, _prev_action, _episode_step_count
     if _global_agent is None:
         return 0  # Default: do nothing
     
-    # Convert state to tensor
-    state_tensor = torch.FloatTensor(state).unsqueeze(0)
+    # Improved epsilon decay: slower decay for better exploration on random maps
+    # Start at 1.0, decay to 0.05 over 500 episodes, then to 0.01 over 1000 episodes
+    if _global_episode_count < 500:
+        eps = 1.0 - 0.95 * (_global_episode_count / 500.0)  # 1.0 -> 0.05
+    elif _global_episode_count < 1000:
+        eps = 0.05 - 0.04 * ((_global_episode_count - 500) / 500.0)  # 0.05 -> 0.01
+    else:
+        eps = 0.01  # minimum exploration
     
-    # Get action (with epsilon for exploration)
-    eps = max(0.01, 0.995 ** _global_episode_count)
     action = _global_agent.act(state, eps)
+    
+    # Store current state and action for next step
+    _prev_state = state
+    _prev_action = action
+    _episode_step_count += 1
     
     return action
 
 def on_episode_end(episode, total_reward, agent_won):
-    """Callback function when episode ends"""
+    """Callback function when episode ends
+    
+    This is where we trigger learning from the replay buffer.
+    """
     global _global_agent, _global_episode_count, _global_model_path
+    global _prev_state, _prev_action, _episode_rewards, _episode_step_count
+    
     _global_episode_count = episode
     
-    print(f"Episode {episode} ended: reward={total_reward:.2f}, agent_won={agent_won}")
+    # Perform multiple learning steps at episode end
+    # This ensures the agent learns from accumulated experience
+    if _global_agent is not None and len(_global_agent.memory) > _global_agent.batch_size:
+        # Learn from experience multiple times
+        num_learning_steps = min(10, _episode_step_count // 10)  # Adaptive learning
+        for _ in range(num_learning_steps):
+            experiences = _global_agent.memory.sample()
+            _global_agent.learn(experiences, _global_agent.gamma)
+        
+        # Update target network more frequently for faster convergence on random maps
+        _global_agent.soft_update(_global_agent.qnetwork_local, 
+                                   _global_agent.qnetwork_target, 
+                                   _global_agent.tau)
     
-    # Save model after each episode
-    if _global_agent is not None:
+    # Calculate epsilon for display
+    if episode < 500:
+        eps = 1.0 - 0.95 * (episode / 500.0)
+    elif episode < 1000:
+        eps = 0.05 - 0.04 * ((episode - 500) / 500.0)
+    else:
+        eps = 0.01
+    
+    result = "WON" if agent_won else "LOST"
+    print(f"\n[Episode {episode}] {result} | Steps: {_episode_step_count} | "
+          f"Epsilon: {eps:.3f} | Buffer: {len(_global_agent.memory)}")
+    
+    # Reset episode tracking
+    _prev_state = None
+    _prev_action = None
+    _episode_rewards = []
+    _episode_step_count = 0
+    
+    # Save model periodically (every 10 episodes) to avoid I/O overhead
+    if _global_agent is not None and episode % 10 == 0:
         torch.save({
             'state_dict': _global_agent.qnetwork_local.state_dict(),
             'episode': episode,
-            'total_reward': total_reward,
+            'agent_won': agent_won,
         }, _global_model_path)
-        print(f"Model saved to {_global_model_path}")
+        print(f"[Model saved to {_global_model_path}]")
 
-def initialize_agent(state_size=57, action_size=6, model_path=None):
+def initialize_agent(state_size=122, action_size=6, model_path=None):  # Updated default state size
     """Initialize the global agent"""
     global _global_agent, _global_model_path
     
@@ -99,5 +160,5 @@ def initialize_agent(state_size=57, action_size=6, model_path=None):
     return _global_agent
 
 # Export functions for C++ binding
-__all__ = ['get_action_from_state', 'on_episode_end', 'initialize_agent']
+__all__ = ['get_action_from_state', 'on_episode_end', 'on_step', 'initialize_agent']
 

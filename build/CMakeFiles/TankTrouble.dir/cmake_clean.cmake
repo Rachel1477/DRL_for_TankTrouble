@@ -15,6 +15,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/TankTrouble.dir/Window.cc.o.d"
   "CMakeFiles/TankTrouble.dir/controller/LocalController.cc.o"
   "CMakeFiles/TankTrouble.dir/controller/LocalController.cc.o.d"
+  "CMakeFiles/TankTrouble.dir/controller/RLController.cc.o"
+  "CMakeFiles/TankTrouble.dir/controller/RLController.cc.o.d"
   "CMakeFiles/TankTrouble.dir/event/ControlEvent.cc.o"
   "CMakeFiles/TankTrouble.dir/event/ControlEvent.cc.o.d"
   "CMakeFiles/TankTrouble.dir/main.cc.o"

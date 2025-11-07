@@ -19,9 +19,10 @@ namespace TankTrouble
     class RLController : public LocalController
     {
     public:
-        // Callback function type for Python training (reserved for future use)
+        // Callback function types for Python training
         typedef std::function<int(const std::vector<double>&)> GetActionCallback;
         typedef std::function<void(int, double, bool)> EpisodeEndCallback;
+        typedef std::function<void(const std::vector<double>&, int, double, const std::vector<double>&, bool)> StepCallback;
 
         RLController();
         ~RLController() override;
@@ -31,6 +32,7 @@ namespace TankTrouble
 
         void setGetActionCallback(GetActionCallback cb) { get_action_cb_ = cb; }
         void setEpisodeEndCallback(EpisodeEndCallback cb) { episode_end_cb_ = cb; }
+        void setStepCallback(StepCallback cb) { step_cb_ = cb; }
 
         int getEpisodeCount() const { return episode_count_; }
         double getTotalReward() const { return total_reward_; }
@@ -38,6 +40,7 @@ namespace TankTrouble
     private:
         GetActionCallback get_action_cb_;
         EpisodeEndCallback episode_end_cb_;
+        StepCallback step_cb_;
 
         std::atomic<bool> training_active_{false};
         int episode_count_;
