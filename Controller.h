@@ -30,10 +30,10 @@ namespace TankTrouble
         Controller();
 
         virtual void start() = 0;
-        ObjectListPtr getObjects();
-        virtual void dispatchEvent(const ControlEvent& event) = 0;
-        BlockList* getBlocks();
-        std::vector<PlayerInfo> getPlaysInfo();
+        virtual ObjectListPtr getObjects();
+        virtual void dispatchEvent(const ControlEvent &event) = 0;
+        virtual BlockList *getBlocks();
+        virtual std::vector<PlayerInfo> getPlaysInfo();
         virtual void quitGame() {}
 
         virtual ~Controller();
@@ -54,4 +54,4 @@ namespace TankTrouble
     };
 }
 
-#endif //TANK_TROUBLE_CONTROLLER_H
+#endif // TANK_TROUBLE_CONTROLLER_H

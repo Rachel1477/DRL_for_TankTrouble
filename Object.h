@@ -4,6 +4,7 @@
 
 #ifndef TANK_TROUBLE_OBJECT_H
 #define TANK_TROUBLE_OBJECT_H
+#include <cstdint>
 #include "util/Vec.h"
 #include "defs.h"
 #include <cairomm/context.h>

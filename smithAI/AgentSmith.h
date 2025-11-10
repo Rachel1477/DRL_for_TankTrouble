@@ -20,9 +20,8 @@
 
 namespace TankTrouble
 {
-    class Block;
     class LocalController;
-
+    
     class AgentSmith
     {
     public:

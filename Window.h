@@ -8,11 +8,11 @@
 #include <memory>
 #include "view/EntryView.h"
 #include "Controller.h"
-
+#include "controller/RLController.h"
+#include "controller/LocalController.h"
 namespace TankTrouble
 {
     class GameView;
-    
 
     class Window : public Gtk::Window
     {
@@ -38,7 +38,9 @@ namespace TankTrouble
         void onGameBegin();
         void onGameOff();
 
+        std::unique_ptr<LocalController> localCtl;
         std::unique_ptr<Controller> ctl;
+        std::unique_ptr<RLController> rlCtl;
         std::unique_ptr<GameView> gameView;
         EntryView entryView;
 

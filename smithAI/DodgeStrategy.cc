@@ -5,13 +5,14 @@
 #include "DodgeStrategy.h"
 #include "Tank.h"
 #include <iostream>
+#include "controller/LocalController.h"
 
 namespace TankTrouble
 {
     std::ostream& operator<<(std::ostream& os, const DodgeStrategy& strategy)
     {
-        for(const auto& cmd: strategy.cmds)
-            os << cmd;
+        // for(const auto& cmd: strategy.cmds)
+        //     os << cmd;
         return os;
     }
 
@@ -25,7 +26,7 @@ namespace TankTrouble
 
     bool DodgeStrategy::operator<(const DodgeStrategy& strategy) const{return needStep < strategy.needStep;}
 
-    bool DodgeStrategy::update(LocalController* ctl, Tank* tank, uint64_t globalStep)
+    bool DodgeStrategy::update(LocalController* ctl, Tank* tank, uint64_t globalStep,AgentSmith* agent)
     {
         bool isForwarding = tank->isForwarding();
         bool isBackwarding = tank->isBackwarding();

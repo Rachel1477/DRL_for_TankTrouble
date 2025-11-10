@@ -19,7 +19,7 @@ namespace TankTrouble
             next(1),
             stuckSteps(0){}
 
-        bool update(LocalController* ctl, Tank* tank, uint64_t globalStep) override;
+        bool update(LocalController* ctl, Tank* tank, uint64_t globalStep,AgentSmith* agent) override;
 
     private:
         AStar::AStarResult route;

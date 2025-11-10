@@ -7,10 +7,9 @@
 namespace TankTrouble
 {
 
-    RoomItem::RoomItem(uint8_t roomId, const std::string& name,
+    RoomItem::RoomItem(uint8_t roomId, const std::string &name,
                        uint8_t playerNum, uint8_t capacity,
-                       bool enableJoin):
-        roomId(roomId)
+                       bool enableJoin) : roomId(roomId)
     {
         set_orientation(Gtk::ORIENTATION_HORIZONTAL);
 
@@ -19,7 +18,7 @@ namespace TankTrouble
         pack_start(roomNameLabel, Gtk::PACK_EXPAND_PADDING, 50);
 
         char buf[10] = {0};
-        sprintf(buf, "%u/%u", playerNum, capacity);
+        // sprintf(buf, "%u/%u", playerNum, capacity);
         playersLabel.set_size_request(30, 20);
         playersLabel.set_text(buf);
         pack_start(playersLabel, Gtk::PACK_EXPAND_PADDING, 50);
@@ -36,7 +35,7 @@ namespace TankTrouble
         pack_start(joinBtn, Gtk::PACK_EXPAND_PADDING, 50);
     }
 
-    void RoomItem::onJoinClicked() {click_join_s.emit(roomId);}
+    void RoomItem::onJoinClicked() { click_join_s.emit(roomId); }
 
-    sigc::signal<void, uint8_t> RoomItem::signal_join_clicked() {return click_join_s;}
+    sigc::signal<void, uint8_t> RoomItem::signal_join_clicked() { return click_join_s; }
 }

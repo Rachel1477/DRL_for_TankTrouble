@@ -7,52 +7,59 @@
 #include <deque>
 #include <string>
 #include <iostream>
+
 #include "Object.h"
 #include "util/Vec.h"
 #include "Strategy.h"
+#include "Tank.h"
 
 namespace TankTrouble
 {
-    class LocalController;
     class DodgeStrategy : public Strategy
     {
     public:
-        enum DodgeOperation {DODGE_CMD_MOVE_FORWARD, DODGE_CMD_MOVE_BACKWARD,
-                DODGE_CMD_ROTATE_CW, DODGE_CMD_ROTATE_CCW,
-                DODGE_CMD_FORWARD_CW, DODGE_CMD_FORWARD_CCW,
-                DODGE_CMD_BACKWARD_CW, DODGE_CMD_BACKWARD_CCW};
+        enum DodgeOperation
+        {
+            DODGE_CMD_MOVE_FORWARD,
+            DODGE_CMD_MOVE_BACKWARD,
+            DODGE_CMD_ROTATE_CW,
+            DODGE_CMD_ROTATE_CCW,
+            DODGE_CMD_FORWARD_CW,
+            DODGE_CMD_FORWARD_CCW,
+            DODGE_CMD_BACKWARD_CW,
+            DODGE_CMD_BACKWARD_CCW
+        };
         struct DodgeCommand
         {
             DodgeOperation op;
             uint64_t step;
             uint64_t targetStep;
 
-            friend std::ostream& operator<<(std::ostream& os, const DodgeCommand& cmd)
+            friend std::ostream &operator<<(std::ostream &os, const DodgeCommand &cmd)
             {
-                os << "Cmd{cmd = " + cmd.toString() + ", step = " << cmd.step << "} ";
+                // os << "Cmd{cmd = " + cmd.toString() + ", step = " << cmd.step << "} ";
                 return os;
             }
 
             [[nodiscard]] std::string toString() const
             {
-                static const char* names[] = {"DODGE_CMD_MOVE_FORWARD", "DODGE_CMD_MOVE_BACKWARD",
+                static const char *names[] = {"DODGE_CMD_MOVE_FORWARD", "DODGE_CMD_MOVE_BACKWARD",
                                               "DODGE_CMD_ROTATE_CW", "DODGE_CMD_ROTATE_CCW",
                                               "DODGE_CMD_FORWARD_CW", "DODGE_CMD_FORWARD_CCW",
                                               "DODGE_CMD_BACKWARD_CW", "DODGE_CMD_BACKWARD_CCW"};
                 return names[this->op];
             }
         };
-        explicit DodgeStrategy(uint64_t needStep):
-            Strategy(Strategy::Dodge), needStep(needStep){}
-        DodgeStrategy(): DodgeStrategy(0){}
-        void addCmd(const DodgeCommand& cmd);
+        explicit DodgeStrategy(uint64_t needStep) : Strategy(Strategy::Dodge), needStep(needStep) {}
+        DodgeStrategy() : DodgeStrategy(0) {}
+        void addCmd(const DodgeCommand &cmd);
         bool isEmpty();
         void popBack();
-        bool update(LocalController* ctl, Tank* tank, uint64_t globalStep) override;
-        bool operator<(const DodgeStrategy& strategy) const;
-        DodgeStrategy& operator=(const DodgeStrategy& strategy) = default;
+        bool update(LocalController *ctl, Tank *tank, uint64_t globalStep, AgentSmith *agent) override;
+        bool operator<(const DodgeStrategy &strategy) const;
+        DodgeStrategy &operator=(const DodgeStrategy &strategy) = default;
         bool isValid();
-        friend std::ostream& operator<<(std::ostream& os, const DodgeStrategy& strategy);
+        friend std::ostream &operator<<(std::ostream &os, const DodgeStrategy &strategy);
 
     private:
         std::deque<DodgeCommand> cmds;
@@ -61,4 +68,4 @@ namespace TankTrouble
     };
 }
 
-#endif //TANK_TROUBLE_DODGE_STRATEGY_H
+#endif // TANK_TROUBLE_DODGE_STRATEGY_H

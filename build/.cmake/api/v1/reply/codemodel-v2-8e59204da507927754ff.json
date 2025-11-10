@@ -1,0 +1,78 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.18"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "TankTrouble",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "TankTrouble::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-TankTrouble-Debug-3039a1a87a655c41296c.json",
+					"name" : "TankTrouble",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "rl_controller::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-rl_controller-Debug-5970929c914d2d47dce5.json",
+					"name" : "rl_controller",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tank_trouble_env::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tank_trouble_env-Debug-e0ff9ba665616e022b5d.json",
+					"name" : "tank_trouble_env",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/run/media/visier/Work Disk/Ubuntu/DRL_for_TankTrouble/build",
+		"source" : "/run/media/visier/Work Disk/Ubuntu/DRL_for_TankTrouble"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

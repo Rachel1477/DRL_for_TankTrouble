@@ -5,6 +5,7 @@
 #ifndef TANK_TROUBLE_DATA_H
 #define TANK_TROUBLE_DATA_H
 #include <string>
+#include <cstdint>
 
 namespace TankTrouble
 {
