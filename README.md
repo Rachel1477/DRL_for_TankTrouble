@@ -7,7 +7,6 @@ TankTrouble 是一个用 C++17 打造的坦克对战游戏（Linux版），支�
 ### 主要特性
 
 - **单机模式**：与高智能的 AI 对手 Agent Smith 对战（会躲子弹、追踪敌人、智能攻击）
-- **联网模式**：支持 2-4 人在线对战，通过 TankTrouble 服务器进行游戏匹配
 - **强化学习训练**：提供完整的 RL 训练环境，支持 DQN、PPO 等算法
 - **GUI 训练界面**：可视化训练过程，实时观察智能体的学习效果
 - **随机地图生成**：每局游戏都有不同的迷宫地图
@@ -95,21 +94,6 @@ cd build
 ./TankTrouble
 # 点击 "Agent训练" 按钮
 ```
-
-#### 方式 2：使用 Python 脚本训练
-
-```bash
-conda activate RL
-cd python
-python train_dqn.py      # DQN 算法训练
-python train_ppo.py      # PPO 算法训练
-python train_with_gui.py # 带 GUI 的训练
-```
-
-更多训练细节请参考：
-- [RL_TRAINING_GUIDE.md](RL_TRAINING_GUIDE.md)
-- [QUICK_START_TRAINING.md](QUICK_START_TRAINING.md)
-- [MODEL_USAGE.md](python/MODEL_USAGE.md)
 
 ---
 
@@ -326,21 +310,6 @@ python train_with_gui.py # 带 GUI 的训练
   - 方便集成到事件驱动模型中
   - 包含移动、旋转、射击等事件类型
 
-### 3.11 网络协议（联网模式）
-
-#### `protocol/Codec.cc / Codec.h`
-- **作用**：消息编解码器
-- **内容**：
-  - 自定义的消息序列化/反序列化机制
-  - 消息格式：`|Type (1byte)|Length (2bytes)|Field1 data|Field2 data|...`
-  - 字节序转换（网络字节序）
-  - 避免引入 protobuf 等第三方库
-
-#### `protocol/Messages.h`
-- **作用**：消息类型定义
-- **内容**：
-  - 定义所有网络消息类型（登录、创建房间、游戏状态同步等）
-  - 定义消息字段结构
 
 ### 3.12 配置文件
 
@@ -436,22 +405,12 @@ python train_with_gui.py # 带 GUI 的训练
 ### 数据流
 
 1. **单机模式**：LocalController → AgentSmith AI → GameView
-2. **联网模式**：OnlineController → TankTroubleServer → GameView
-3. **RL 训练模式**：Python (DQN/PPO) → TankEnv → RLController → GameView
+2. **RL 训练模式**：Python (DQN/PPO) → TankEnv → RLController → GameView
 
 ---
 
-## 5. 相关文档
 
-- **[RL_TRAINING_GUIDE.md](RL_TRAINING_GUIDE.md)**：详细的强化学习训练指南
-- **[QUICK_START_TRAINING.md](QUICK_START_TRAINING.md)**：快速开始训练教程
-- **[MODEL_USAGE.md](python/MODEL_USAGE.md)**：如何使用训练好的模型
-- **[RL_IMPROVEMENTS_SUMMARY.md](RL_IMPROVEMENTS_SUMMARY.md)**：RL 改进总结
-- **[REWARD_IMPROVEMENTS_V2.md](REWARD_IMPROVEMENTS_V2.md)**：奖励函数改进文档
-
----
-
-## 6. 技术亮点
+## 5. 技术亮点
 
 1. **智能 AI 对手**：Agent Smith 使用弹道预测、A* 路径规划、躲避策略，难度极高
 2. **碰撞检测优化**：通过网格划分减少不必要的碰撞检测，提升性能
