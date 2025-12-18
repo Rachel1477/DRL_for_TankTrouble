@@ -1,340 +1,503 @@
-# TankTrouble: 用c++17打造支持单机/联网的坦克动荡游戏(linux版)
+# TankTrouble - 深度强化学习坦克对战游戏
 
-**本仓库是 TankTrouble 的linux PC端，TankTrouble 服务器在另一个仓库中**
+## 1. 项目简介
 
-[TankTroubleServer](https://github.com/JustDoIt0910/TankTroubleServer)
+TankTrouble 是一个用 C++17 打造的坦克对战游戏（Linux版），支持单机和联网模式。本项目基于原版 TankTrouble 游戏，集成了**深度强化学习（DRL）**训练功能，可以训练智能体（Agent）学习如何玩坦克对战游戏。
 
+### 主要特性
 
-**项目依赖gtkmm-3.0，如果没有的话需要先安装gtkmm**
+- **单机模式**：与高智能的 AI 对手 Agent Smith 对战（会躲子弹、追踪敌人、智能攻击）
+- **联网模式**：支持 2-4 人在线对战，通过 TankTrouble 服务器进行游戏匹配
+- **强化学习训练**：提供完整的 RL 训练环境，支持 DQN、PPO 等算法
+- **GUI 训练界面**：可视化训练过程，实时观察智能体的学习效果
+- **随机地图生成**：每局游戏都有不同的迷宫地图
+- **物理引擎**：包含碰撞检测、子弹反弹等真实物理效果
+
+**相关仓库**：[TankTroubleServer](https://github.com/JustDoIt0910/TankTroubleServer)
+
+---
+
+## 2. 快速开始
+
+### 2.1 环境要求
+
+- **操作系统**：Linux (建议 Ubuntu 18.04+)
+- **编译器**：支持 C++17 的 GCC/Clang
+- **Python**：Python 3.8+ (用于强化学习训练)
+- **Conda**：Miniconda 或 Anaconda（用于管理 Python 环境）
+
+### 2.2 安装依赖
+
+#### 安装系统依赖
+
 ```bash
-apt-get install libgtkmm-3.0-dev
+# 安装 gtkmm-3.0 图形界面库
+sudo apt-get update
+sudo apt-get install libgtkmm-3.0-dev
+
+# 安装 CMake（如果没有）
+sudo apt-get install cmake
 ```
-**编译**
+
+#### 创建 Conda 环境
+
 ```bash
-git clone https://github.com/JustDoIt0910/TankTrouble.git
-cd TankTrouble
+# 创建名为 RL 的 conda 环境
+conda create -n RL python=3.10
+
+# 激活环境
+conda activate RL
+
+# 安装 Python 依赖
+pip install torch numpy pybind11 gymnasium
+```
+
+### 2.3 编译项目
+
+使用提供的 `build.sh` 脚本进行一键编译：
+
+```bash
+# 克隆仓库
+git clone https://github.com/your-repo/DRL_for_TankTrouble.git
+cd DRL_for_TankTrouble
+
+# 初始化子模块（如果有）
 git submodule update --init --recursive
-mkdir build && cd build
-cmake ..
-make
+
+# 运行编译脚本
+bash build.sh
+```
+
+编译脚本会自动：
+1. 激活 conda RL 环境
+2. 检查并安装必要的 Python 依赖（pybind11、PyTorch）
+3. 配置 CMake（指定 Python 路径和 RPATH）
+4. 编译项目生成可执行文件和 Python 模块
+
+### 2.4 运行游戏
+
+```bash
+cd build
 ./TankTrouble
 ```
 
-**入口可以选择玩单机还是联网**
+启动后可以选择：
+- **单机模式**：与 Agent Smith AI 对战
+- **在线模式**：连接服务器进行多人对战
+- **Agent训练**：开始强化学习训练（需要先编译成功）
 
-![entry](https://github.com/JustDoIt0910/MarkDownPictures/blob/main/TankTrouble/entry.png)
+### 2.5 开始 RL 训练
 
+#### 方式 1：使用 GUI 训练界面
 
-
-**单机模式下是和一个躲子弹超强的人机打(Agent Smith, 起这个名字是因为它让我想起来黑客帝国里那个会躲子弹的 Agent Smith)**
-
-![single](https://github.com/JustDoIt0910/MarkDownPictures/blob/main/TankTrouble/single.png)
-
-
-
-**在线模式登录以后进入大厅，可以看到已有的房间，也可以新开房间，支持2/3/4人的房间，人数再多没必要，毕竟地图大小固定了。房间人满后游戏自动开始**
-
-![lobby](https://github.com/JustDoIt0910/MarkDownPictures/blob/main/TankTrouble/gameLobby.png)
-
-
-
-![online](https://github.com/JustDoIt0910/MarkDownPictures/blob/main/TankTrouble/online.png)
-
-
-
-### 项目结构
-
-- controller ------------------ 可以理解为后端，负责游戏逻辑，数据更新
-  - LocalController.h LocalController.cc --------------- 单机模式下的controller, 负责游戏所有逻辑
-  - OnlineController.h OnlineController.cc ----------- 联网模式下的controller, 负责和服务器交互，更新数据
-- ev ----------------------------- 参考muduo实现的极简事件驱动网络库，游戏逻辑在单独线程中驱动，独立于gui线程。联网模式下还要负责网络通信
-- event ---------------------------------- 将游戏中的操作封装成事件，方便融合进事件驱动模型
-- protocol ------------------------------ 通信协议部分，只在联网模式下用到
-- smithAI -------------------------------- 人机的所有逻辑，包括危险躲避，索敌，攻击等
-- util -------------------------------------- 主要是数学工具，包含游戏中用到的几何、向量计算、碰撞检测等
-- view ------------------------------------ 类比前端，所有gui界面
-- Controller.h Controller.cc------- LocalController和OnlineController的基类
-- Maze.h Maze.cc -------------------- 地图生成算法
-- Object.h Object.cc ---------------- 游戏中对象的多态基类
-- Tank.h Tank.cc --------------------- 坦克对象，继承Object
-- Shell.h Shell.cc --------------------- 炮弹对象，继承Object
-- Block.h Block.cc ------------------- 墙，不继承Object，根据地图生成，单独管理
-- Window.h Window.cc ----------- gui主类，管理所有views
-- defs.h --------------------------------- 游戏中一些宏定义
-
-
-
-### 一些项目结构的说明
-
-对于单机模式，游戏逻辑主要在LocalController中，网络模式中这部分被移到了服务器的GameRoom中，控制一个房间里的游戏进行。
-
-1. **数据层面如何定义一个游戏中的对象**
-
-游戏对象要能让view层将其正确的绘制，也要能让Controller获取它的当前位置信息，移动状态，下一刻的位置等
-
-我用一个PosInfo 结构表示一个对象的位置信息
-
-```c++
- struct PosInfo
- {
-     PosInfo(const util::Vec& p, double a): pos(p), angle(a){}
-     PosInfo& operator=(const PosInfo& info) = default;
-     bool operator==(const PosInfo& info) const {return (pos == info.pos && angle == info.angle);}
-     PosInfo(): PosInfo(util::Vec(0.0, 0.0), 0){}
-     static PosInfo invalid() {return PosInfo{util::Vec(DBL_MAX, DBL_MAX), DBL_MAX};}
-     bool isValid() const
-     {return (pos.x() != DBL_MAX && pos.y() != DBL_MAX && angle != DBL_MAX);}
-
-     util::Vec pos;
-
-     double angle;
- };
+```bash
+cd build
+./TankTrouble
+# 点击 "Agent训练" 按钮
 ```
 
-pos 是中心坐标，angle是相对于x轴正半轴的顺时针旋转角(°)，所有与游戏对象相关的数学计算也都离不开这两个参数。
+#### 方式 2：使用 Python 脚本训练
+
+```bash
+conda activate RL
+cd python
+python train_dqn.py      # DQN 算法训练
+python train_ppo.py      # PPO 算法训练
+python train_with_gui.py # 带 GUI 的训练
+```
+
+更多训练细节请参考：
+- [RL_TRAINING_GUIDE.md](RL_TRAINING_GUIDE.md)
+- [QUICK_START_TRAINING.md](QUICK_START_TRAINING.md)
+- [MODEL_USAGE.md](python/MODEL_USAGE.md)
+
+---
+
+## 3. 关键文件解释
+
+### 3.1 核心游戏逻辑
+
+#### `main.cc`
+- **作用**：程序入口，初始化 GTK 应用并启动主窗口
+- **内容**：创建 GTK Application 实例，运行游戏主窗口
+
+#### `Window.cc / Window.h`
+- **作用**：游戏主窗口管理器
+- **内容**：管理所有视图（入口视图、游戏视图、大厅视图），处理视图切换，嵌入 Python 解释器用于 RL 训练回调
+
+#### `Controller.cc / Controller.h`
+- **作用**：游戏控制器的抽象基类
+- **内容**：定义了 LocalController 和 OnlineController 的统一接口，包括游戏对象管理、移动控制等
+
+### 3.2 游戏对象
+
+#### `Tank.cc / Tank.h`
+- **作用**：坦克对象，继承自 Object
+- **内容**：
+  - 坦克的绘制、移动、旋转逻辑
+  - 前进、后退、顺时针/逆时针旋转控制
+  - 子弹发射管理（剩余弹药数量）
+  - 坦克尺寸定义：宽20、高28像素
+
+#### `Shell.cc / Shell.h`
+- **作用**：炮弹对象，继承自 Object
+- **内容**：
+  - 炮弹的绘制和移动逻辑
+  - 子弹反弹计算（与墙壁碰撞后的反射）
+  - 子弹生命周期管理
+
+#### `Block.cc / Block.h`
+- **作用**：墙壁对象
+- **内容**：
+  - 地图中的墙壁方块
+  - 不继承 Object，根据地图生成算法创建
+  - 用于碰撞检测的矩形区域
+
+#### `Object.cc / Object.h`
+- **作用**：游戏对象的多态基类
+- **内容**：
+  - 定义了所有游戏对象的通用接口：`draw()`、`getCurrentPosition()`、`getNextPosition()`
+  - 包含位置信息结构 `PosInfo`（坐标 + 角度）
+  - 移动状态枚举
+
+### 3.3 地图生成
+
+#### `Maze.cc / Maze.h`
+- **作用**：随机迷宫地图生成算法
+- **内容**：
+  - 使用类似 Prim 最小生成树的算法
+  - 从左上角开始，随机打通相邻格子之间的墙
+  - 保证每次生成的地图都不同且连通
+
+### 3.4 游戏控制器
+
+#### `controller/LocalController.cc / LocalController.h`
+- **作用**：单机模式的游戏控制器
+- **内容**：
+  - 管理单机游戏的所有逻辑：对象移动、碰撞检测、得分计算
+  - 管理 Agent Smith AI 的行为
+  - 维护全局步数 `globalSteps`（用于 AI 决策）
+  - 处理碰撞检测优化表（按网格划分可能碰撞的墙壁）
+
+#### `controller/OnlineController.cc / OnlineController.h`
+- **作用**：联网模式的游戏控制器
+- **内容**：
+  - 负责与服务器通信，同步游戏状态
+  - 从服务器获取游戏对象数据并更新本地视图
+  - 发送玩家操作到服务器
+
+#### `controller/RLController.cc / RLController.h`
+- **作用**：强化学习模式的游戏控制器
+- **内容**：
+  - 专门为 RL 训练设计的控制器
+  - 提供状态观测、动作执行、奖励计算接口
+  - 与 Python 端的 RL 算法交互
+
+### 3.5 AI 人机（Agent Smith）
+
+#### `smithAI/AgentSmith.cc / AgentSmith.h`
+- **作用**：AI 对手的决策大脑
+- **内容**：
+  - 危险检测：预测炮弹弹道，判断是否处于威胁中
+  - 躲避决策：计算最优躲避路径（旋转、移动、边转边移）
+  - 攻击决策：瞄准并射击敌人
+  - 路径规划：调用 A* 算法接近敌人
+
+#### `smithAI/DodgeStrategy.cc / DodgeStrategy.h`
+- **作用**：躲避策略执行者
+- **内容**：
+  - 存储并执行 AgentSmith 生成的躲避命令队列
+  - 命令格式：`{ROTATE_CW, 3}, {MOVE_FORWARD, 15}`
+  - 根据 globalSteps 判断每个命令是否执行完毕
+
+#### `smithAI/ContactStrategy.cc / ContactStrategy.h`
+- **作用**：接近策略执行者
+- **内容**：
+  - 存储 A* 算法生成的路径点
+  - 控制坦克沿路径点移动，接近敌人
+
+#### `smithAI/AttackStrategy.cc / AttackStrategy.h`
+- **作用**：攻击策略执行者
+- **内容**：
+  - 存储瞄准角度
+  - 通过弹道模拟寻找最佳射击角度
+
+#### `smithAI/AStar.cc / AStar.h`
+- **作用**：A* 路径规划算法
+- **内容**：
+  - 经典 A* 算法实现
+  - 在迷宫地图中寻找从起点到终点的最短路径
+  - 返回路径点列表供 ContactStrategy 使用
+
+### 3.6 强化学习环境
+
+#### `rl/TankEnv.cc / rl/TankEnv.h`
+- **作用**：RL 训练环境（Gym-like 接口）
+- **内容**：
+  - 提供标准的 RL 接口：`reset()`、`step(action)`
+  - 动作空间：DO_NOTHING、MOVE_FORWARD、MOVE_BACKWARD、ROTATE_CW、ROTATE_CCW、SHOOT
+  - 状态空间：坦克位置、敌人位置、炮弹信息、墙壁信息等
+  - 奖励函数：击中敌人奖励、被击中惩罚、存活奖励等
+  - 管理智能体坦克（agent_tank_id_）和敌人坦克（enemy_tank_id_）
+
+### 3.7 Python 绑定
+
+#### `bindings/bindings.cc`
+- **作用**：TankEnv 的 Python 绑定
+- **内容**：
+  - 使用 pybind11 将 C++ 的 TankEnv 暴露给 Python
+  - 生成 `tank_trouble_env` Python 模块
+  - 允许在 Python 中调用 `env.reset()` 和 `env.step(action)`
+
+#### `bindings/rl_bindings.cc`
+- **作用**：RLController 的 Python 绑定
+- **内容**：
+  - 使用 pybind11 将 C++ 的 RLController 暴露给 Python
+  - 生成 `rl_controller` Python 模块
+  - 用于 GUI 训练模式下的回调
+
+### 3.8 工具类
+
+#### `util/Vec.cc / util/Vec.h`
+- **作用**：二维向量类
+- **内容**：
+  - 向量的加减乘除、点乘、叉乘
+  - 向量长度、单位向量、旋转等运算
+  - 游戏中所有位置和方向计算的基础
+
+#### `util/Math.cc / util/Math.h`
+- **作用**：几何数学工具库
+- **内容**：
+  - 圆形与矩形的碰撞检测
+  - 矩形与矩形的碰撞检测（投影法）
+  - 线段与线段的交点计算
+  - 子弹反弹方向计算
+  - 包围盒（Bounding Box）算法
+
+#### `util/Id.cc / util/Id.h`
+- **作用**：唯一 ID 生成器
+- **内容**：
+  - 为游戏对象（坦克、炮弹）生成唯一标识符
+  - 使用原子操作保证线程安全
+
+### 3.9 视图层（GUI）
+
+#### `view/EntryView.cc / EntryView.h`
+- **作用**：游戏入口界面
+- **内容**：
+  - 显示游戏 Logo
+  - 提供"单机模式"、"在线模式"、"Agent训练"按钮
+
+#### `view/GameView.cc / GameView.h`
+- **作用**：游戏主界面
+- **内容**：
+  - 绘制游戏场景（坦克、炮弹、墙壁）
+  - 显示玩家信息（血量、得分）
+  - 处理键盘输入（WASD 移动，空格射击）
+
+#### `view/GameLobby.cc / GameLobby.h`
+- **作用**：在线模式游戏大厅
+- **内容**：
+  - 显示可用房间列表
+  - 创建新房间、加入房间功能
+  - 房间信息同步
+
+#### `view/component/GameArea.cc / GameArea.h`
+- **作用**：游戏绘制区域组件
+- **内容**：
+  - 使用 Cairo 绘制游戏场景
+  - 调用每个对象的 `draw()` 方法进行渲染
+  - 处理画面刷新和动画
+
+#### `view/component/PlayerInfoItem.cc / PlayerInfoItem.h`
+- **作用**：玩家信息显示组件
+- **内容**：显示玩家名称、血量、得分等信息
+
+#### `view/component/RoomItem.cc / RoomItem.h`
+- **作用**：房间列表项组件
+- **内容**：在游戏大厅中显示单个房间的信息
+
+### 3.10 事件系统
+
+#### `event/ControlEvent.cc / ControlEvent.h`
+- **作用**：游戏控制事件封装
+- **内容**：
+  - 将键盘操作封装成事件对象
+  - 方便集成到事件驱动模型中
+  - 包含移动、旋转、射击等事件类型
+
+### 3.11 网络协议（联网模式）
+
+#### `protocol/Codec.cc / Codec.h`
+- **作用**：消息编解码器
+- **内容**：
+  - 自定义的消息序列化/反序列化机制
+  - 消息格式：`|Type (1byte)|Length (2bytes)|Field1 data|Field2 data|...`
+  - 字节序转换（网络字节序）
+  - 避免引入 protobuf 等第三方库
+
+#### `protocol/Messages.h`
+- **作用**：消息类型定义
+- **内容**：
+  - 定义所有网络消息类型（登录、创建房间、游戏状态同步等）
+  - 定义消息字段结构
+
+### 3.12 配置文件
+
+#### `defs.h`
+- **作用**：游戏全局宏定义
+- **内容**：
+  - 游戏区域尺寸、网格大小
+  - 坦克和炮弹的物理参数
+  - 移动步长、旋转步长等常量
+
+#### `CMakeLists.txt`
+- **作用**：CMake 构建配置文件
+- **内容**：
+  - 配置编译选项（C++17）
+  - 查找依赖库（gtkmm、Python、pybind11）
+  - 定义编译目标：
+    - `TankTrouble`：主可执行文件
+    - `tank_trouble_env.so`：Python 环境模块
+    - `rl_controller.so`：RL 控制器模块
+  - 设置 RPATH 解决 libstdc++.so.6 版本冲突
+
+#### `build.sh`
+- **作用**：一键编译脚本
+- **内容**：
+  1. 激活 conda RL 环境
+  2. 检查 Python、pybind11、PyTorch 依赖
+  3. 清理并创建 build 目录
+  4. 配置 CMake（指定 Python 路径、RPATH）
+  5. 使用多核编译 `make -j$(nproc)`
+  6. 提示编译成功和运行方式
+
+#### `build_python_module.sh`
+- **作用**：单独编译 Python 模块的脚本
+- **内容**：仅编译 `tank_trouble_env.so` 和 `rl_controller.so`，不编译 GUI 部分
+
+---
+
+## 4. 项目架构总览
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                         主程序入口                           │
+│                        main.cc                              │
+└─────────────────┬───────────────────────────────────────────┘
+                  │
+                  ▼
+        ┌─────────────────────┐
+        │   Window.cc/h       │  ← 主窗口管理器
+        │  (GTK Application)  │
+        └─────────┬───────────┘
+                  │
+         ┌────────┼────────┐
+         │        │        │
+         ▼        ▼        ▼
+    ┌────────┐ ┌────────┐ ┌──────────┐
+    │ Entry  │ │ Game   │ │  Lobby   │  ← 视图层
+    │ View   │ │ View   │ │  View    │
+    └────────┘ └───┬────┘ └──────────┘
+                   │
+                   ▼
+         ┌─────────────────────┐
+         │   Controller        │  ← 控制器层
+         │  (基类)             │
+         └──────┬──────────────┘
+                │
+      ┌─────────┼─────────┐
+      │         │         │
+      ▼         ▼         ▼
+┌──────────┐ ┌────────┐ ┌──────────┐
+│ Local    │ │ Online │ │ RL       │
+│Controller│ │Ctrl    │ │Controller│
+└────┬─────┘ └────────┘ └─────┬────┘
+     │                         │
+     ▼                         ▼
+┌──────────┐            ┌─────────────┐
+│ Smith AI │            │ TankEnv     │  ← RL 环境
+│ (策略)   │            │ (Gym-like)  │
+└──────────┘            └─────┬───────┘
+                              │
+                              ▼
+                      ┌───────────────┐
+                      │ Python 训练   │
+                      │ (DQN/PPO)     │
+                      └───────────────┘
+```
+
+### 线程模型
+
+- **GUI 线程**：处理界面渲染和用户输入
+- **Controller 线程**：运行游戏逻辑（由自定义事件驱动库驱动）
+- **网络线程**（联网模式）：处理与服务器的通信
+
+### 数据流
+
+1. **单机模式**：LocalController → AgentSmith AI → GameView
+2. **联网模式**：OnlineController → TankTroubleServer → GameView
+3. **RL 训练模式**：Python (DQN/PPO) → TankEnv → RLController → GameView
+
+---
+
+## 5. 相关文档
+
+- **[RL_TRAINING_GUIDE.md](RL_TRAINING_GUIDE.md)**：详细的强化学习训练指南
+- **[QUICK_START_TRAINING.md](QUICK_START_TRAINING.md)**：快速开始训练教程
+- **[MODEL_USAGE.md](python/MODEL_USAGE.md)**：如何使用训练好的模型
+- **[RL_IMPROVEMENTS_SUMMARY.md](RL_IMPROVEMENTS_SUMMARY.md)**：RL 改进总结
+- **[REWARD_IMPROVEMENTS_V2.md](REWARD_IMPROVEMENTS_V2.md)**：奖励函数改进文档
+
+---
+
+## 6. 技术亮点
+
+1. **智能 AI 对手**：Agent Smith 使用弹道预测、A* 路径规划、躲避策略，难度极高
+2. **碰撞检测优化**：通过网格划分减少不必要的碰撞检测，提升性能
+3. **投影法碰撞检测**：支持任意角度旋转的矩形碰撞
+4. **包围盒算法**：精确计算子弹反弹方向
+5. **事件驱动架构**：游戏逻辑与 GUI 完全解耦，符合单一职责原则
+6. **自定义网络协议**：高效的消息序列化，无需第三方库
+7. **RL 环境集成**：完整的 Gym-like 接口，支持多种 RL 算法
+8. **跨语言调用**：C++ 和 Python 通过 pybind11 无缝集成
+
+---
+
+## 7. 开发者信息
+
+本项目基于原版 TankTrouble 游戏，增加了深度强化学习训练功能。
+
+### 贡献指南
+
+欢迎提交 Issue 和 Pull Request！
+
+### 许可证
+
+详见 [LICENSE](LICENSE) 文件。
+
+---
+
+## 8. 常见问题
+
+### Q1: 编译时提示找不到 pybind11？
+**A**: 确保已激活 RL 环境并安装 pybind11：
+```bash
+conda activate RL
+pip install pybind11
+```
+
+### Q2: 运行时报错 `libstdc++.so.6: version 'GLIBCXX_3.4.30' not found`？
+**A**: 这是库版本冲突，使用 `build.sh` 脚本编译可以自动解决（会设置正确的 RPATH）。
+
+### Q3: 训练时智能体一直原地不动？
+**A**: 检查奖励函数设计，确保鼓励探索行为。可以参考 `REWARD_IMPROVEMENTS_V2.md` 调整奖励。
+
+### Q4: GUI 训练界面卡顿？
+**A**: 降低渲染频率或使用无 GUI 的训练脚本（`train_dqn.py`）。
+
+### Q5: 如何加载训练好的模型？
+**A**: 参考 `python/MODEL_USAGE.md` 文档，使用 `torch.load()` 加载模型权重。
+
+---
 
-除此之外一个对象一定有其移动状态，对于坦克来说，有前进，后退，顺时针旋转，逆时针旋转等，对于炮弹则只有前进状态。Tank和Shell都实现Object中的虚函数draw(), getCurrentPosition(), getNextPosition()等等，view层拿到的是一个std::unique_ptr<Object> 的多态列表，它只需要对每个对象调用draw()就好了，而不用管对方是什么。Controller同理，不需要知道对象类型就可以拿到位置，状态等信息。
-
-
-
-2. **关于线程模型**
-
-   我选择把Controller放到独立于gui主线程的另一个线程中，由我自己的事件驱动库驱动，主要有几个考虑
-
-   - 符合线程的单一职责原则
-   - gui线程中不应该执行相对耗时的计算，单机模式中人机的计算量还是比较大的，都塞进gui线程中或许会降低界面响应，网络模式更不用说了，gui线程处理网络通信肯定是不合适的。
-   - 可以让view和controller完全解耦，view层不需要知道，也不应该知道当前是LocalController还是OnlineController在向它提供数据，它的职责仅仅是拿到数据，绘制，有键盘事件。向controller报告，view层的代码不需要为不同Controller作修改。
-
-   所以LocalController和OnlineController都继承Controller，对外暴露统一的接口。区别在于游戏对象是自己管理还是从服务器拿的而已。
-
-
-
-### 游戏主要逻辑的实现
-
-主逻辑很简单，先由Maze生成随机地图，根据地图初始化游戏中的墙(blocks)，LocalController管理一个多态对象列表，设置定时任务，每隔一定时间将列表中的所有对象移动到下一个位置。这个间隔越短对象移动越快(当然也和移动步长有关)。稍微复杂一点的地方是碰撞检测，炮弹与墙和坦克的碰撞，计算反弹，以及坦克与墙的碰撞等
-
-​		几何图形的碰撞判断都在Math.cc中实现
-
-- **炮弹与墙的碰撞检测和反弹计算**
-
-  其实游戏中的墙是由一根根固定长度和宽度的Block组合而成，所以炮弹与墙碰撞可以简化为圆形和矩形的重叠判断
-
-![p1](https://github.com/JustDoIt0910/MarkDownPictures/blob/main/TankTrouble/p1.png)
-
-图中v1, v2是矩形两个方向的单位向量，当然不要求矩形是水平或者垂直，只是因为游戏中所有Block都是横平竖直的。计算v在两个方向向量上的投影长度，当v在v2上投影长度小于W/2 + r，在v1上投影小于H/2 + r，且矩形中心与圆形中心距离小于R + r时，一定会发生重叠。
-
-那么怎么计算反弹方向呢？我用到一点包围盒的思想，将矩形外围看作有一个由四条线段b1, b2, b3, b4组成的包围盒, 线段与矩形外围的距离是炮弹的半径。
-
-![p2](https://github.com/JustDoIt0910/MarkDownPictures/blob/main/TankTrouble/p2.png)
-
-在某一次碰撞检测中，可以得到一颗Shell当前的位置和下一步的位置，这两个位置的中心会构成一条线段，将这条线段依次与包围盒的4个边求交点，有交点的那条包围盒线段就是Shell下一步将会碰到的矩形边，根据这条边是水平还是竖直，就可以得到反弹后的方向了。
-
-- **坦克与墙的碰撞检测**
-
-  可以简化为矩形与矩形的重叠检测。这里用到的是投影法。关于投影法判断矩形重叠，这篇文章讲的比较清楚
-
-  [投影法判断旋转矩形重叠](https://blog.csdn.net/tom_221x/article/details/38457757)
-
-- **一点优化措施**
-
-  如果每个对象的每一次移动，都要与地图中所有Block进行碰撞检测，那未免有些蠢，其实一个对象在位置和运动方向确定的情况下，只有一小部分墙壁是可能发生碰撞的，即需要判断的。为此我将地图划分为许多单元格，如图
-
-  ![p3](https://github.com/JustDoIt0910/MarkDownPictures/blob/main/TankTrouble/p3.png)
-
-  这种情况下只需要判断左上角四个Block就好了。所以可以维护两个可能碰撞表，记录在某个格子，向某个方向运动时的可能碰撞列表(Tank 没有方向这一维，因为它几何形状比较不规则)，在生成地图后，初始化blocks时打表。
-
-  ```c++
-  std::vector<int> shellPossibleCollisionBlocks[HORIZON_GRID_NUMBER][VERTICAL_GRID_NUMBER][8];
-  std::vector<int> tankPossibleCollisionBlocks[HORIZON_GRID_NUMBER][VERTICAL_GRID_NUMBER];
-  ```
-
-
-
-### 关于人机
-
-人机是最有趣的部分了。它的逻辑分为危险躲避，接近敌人，瞄准攻击三部分。AgentSmith.cc中的代码负责作出躲避、接近、攻击的最优决策。但是从决策到对象真正移动之间还需要一个执行者，就是smithAI下的各种Strategy了，DodgeStrategy是躲避决策执行者，ContactStrategy是接近决策执行者，AttackStrategy是攻击决策执行者，决策以不同的形式保存在strategy中。
-
-对于DodgeStrategy, 一次完整的躲避决策由一个命令队列表示，比如
-
-​											{ROTATE_CW, 3}, {MOVE_FORWARD, 15}
-
-表示先顺时针旋转三个步长，再前进15个步长。AgentSmith只负责生成这些命令，由DodgeStrategy负责在正确的时间改变坦克的移动状态，也就是执行命令
-
-ContactStrategy和AttackStrategy也类似，只不过一个存的是A*算法生成的路径点，一个存的是瞄准角度而已。总之AgentSmith和Strategy的关系就类似于高级指挥官与基层军官的关系。
-
-- #### Smith的躲避决策算法
-
-  LocalController中有个变量对于人机至关重要，globalSteps，64位无符号整数，初始为0，每个移动周期会自增1，smith需要它来推算未来某个时间点炮弹的位置，strategy也需要知道globalSteps才能确定某个命令是否已经执行了足够的步数。
-
-  - **威胁检测**
-
-    Smith会定期对距离自己一定范围之内炮弹进行弹道预测，因为炮弹会反弹，需要将弹道分成一段一段的结构考虑。定义"弹道段"结构BallisticSegment
-
-    ```c++
-     struct BallisticSegment
-     {
-         int shellId; //炮弹的id
-         int seq;		//段序号，表示当前段是整条弹道中的第几段
-         KeyPoint start; //起点坐标
-         KeyPoint end; //终点坐标
-         util::Vec center;
-         double angle; //炮弹在这段弹道上的移动方向
-         double length; //这段长度
-         double distanceToTarget; //段的起点与smith的距离，这个值决定躲避的优先级
-         
-         BallisticSegment(int id, int seq, KeyPoint s, KeyPoint e, double len, double a, double dis):
-         	shellId(id), seq(seq), start(std::move(s)), end(std::move(e)),
-         	length(len), angle(a), distanceToTarget(dis)
-             {center = util::Vec((start.second.x() + end.second.x()) / 2,
-                                 (start.second.y() + end.second.y()) / 2);}
-         
-         static BallisticSegment invalid(){return {-1, -1, KeyPoint(), KeyPoint(), 0, 0, 0};}
-         
-         bool isValid() const {return shellId != -1;}
-     };
-    ```
-
-    ```c++
-    typedef std::vector<BallisticSegment> Ballistic; //一条完整弹道
-    typedef std::unordered_map<int, Ballistic> Ballistics; // 炮弹id -> 弹道
-    ```
-
-    如何判断某条“弹道段”对自己有威胁呢？可以将一条BallisticSegment视作一个宽度为炮弹直径的长方形，如果它与smith有重叠，那smith就处于这颗炮弹的“炮线”上，这个段将会被放入威胁列表中。
-
-    最后smith会选择躲避起始点距离自己最近的那个段，因为这颗炮弹应该是最早到达的。
-
-    下边这个例子中，两条蓝色段属于一条弹道，两条红色段属于另一条弹道。浅蓝色和深红色的段是有威胁段，由于红色段距离近，所以深红色段是当前要躲避的段。
-
-    ![p4](https://github.com/JustDoIt0910/MarkDownPictures/blob/main/TankTrouble/p4.png)
-
-    这么看smith似乎很短视，每个时刻只能躲避一颗炮弹，但是实际测试发现这种局部最优解的效果其实是很不错的。
-
-  - **决策生成**
-
-    定位了威胁，接下来就是确定要如何移动才能使得smith与威胁段不相交。除了暴力模拟我没有想出来更好的方法，但是可以通过一些前置的计算来尽量保证模拟中的第一种可行方案即为最优方案，这样可以尽早结束模拟。smith会依次尝试以下三种移动方式：
-
-    - **不移动，只旋转**
-
-      当炮线比较靠近边缘时，旋转一般是耗时最短的选择
-
-      ![p5](https://github.com/JustDoIt0910/MarkDownPictures/blob/main/TankTrouble/p5.png)
-
-    - **先旋转，再移动**
-
-      仅靠旋转躲不开时，就要尝试移动到炮线的一侧去。那是向左侧躲避最优还是向右侧最优？这就需要一点向量计算了。
-
-      ![p6](https://github.com/JustDoIt0910/MarkDownPictures/blob/main/TankTrouble/p6.png)
-
-      v是炮弹运动方向向量，v2是从炮弹中心坐标指向坦克中心坐标的向量，根据v与v2的叉乘的正负，可以知道v2在v的左侧还是右侧。明显左边情况向左侧躲避最优，右边情况向右侧躲避最优。
-
-      **注：并不是只要能躲开当前威胁就可行，在模拟每一步时也要计算坦克会不会碰墙，会不会撞上炮弹，如果会，pass掉当前方案，尝试旋转到下一个角度再移动**
-
-    - **边转弯边移动**
-
-      兜底的方案，同样也是模拟。
-
-  - **决策执行**
-
-    每一轮移动中，DodgeStrategy从命令队列头取出命令，判断该命令是否已经执行了足够的步数，如果是，将其弹出，将坦克移动状态设置为下一命令指定的移动状态，这样持续直到命令队列为空。
-
-    **注：smith的决策更新的速度是比较快的，这常常导致一个决策没有执行完就被覆盖成新的，不过这并不是坏事，因为它每次做出的都是局部最优解，一般不会与上一次决策冲突，即使冲突也是因为发现了更优的策略，这会使smith的躲避更加灵活**。
-
-- #### Smith的路线规划
-
-  使用经典的A*算法，在smithAI/AStar.h smithAI/AStar.cc 中实现。生成的路径点存放在ContactStrategy中，由后者判断何时转弯等等。
-
-- #### Smith攻击策略
-
-  进入攻击范围后smith会开始寻找瞄准角度，也是模拟+弹道预测。
-
-
-
-### 随机地图生成
-
-使用类似prim最小生成树的算法，初始状态地图中每个格子之间都是墙隔开，从最左上角的格子开始，每次循环随机选一面相邻的墙，打通它，打通一面墙就相当于把墙对面的格子加入了最小生成树中。当然已经被联通的格子不可以再次联通，最终会生成一个迷宫，且每次是随机的。
-
-
-
-### 关于ev事件驱动库
-
-这是我在阅读陈硕老师的muduo库后，实现的极简版的事件驱动网络库，实现中用到的一些线程同步工具等尽量使用标准库现有的组件，而没有自己再造，只提供了IPv4的支持。部分地方有小的简化与改动，比如没有向原版那样在线程间传递裸的fd，而是通过Socket类的移动语义转移fd所有权，只支持epoll等等。
-
-reactor ------------------- 事件循环相关，EventLoop, Channel, Epoller, 定时器等等
-
-net ------------------------- 网络相关
-
-utils ----------------------- 时间戳，线程工具，线程池
-
-
-
-### 在线模式
-
-1. **网络协议选择**
-
-   对于登录，登出，创建/加入房间，房间、玩家信息的同步，这些操作需要可靠性保证，否则会出现数据不一致，而对实时性要求不是很高，使用TCP，而游戏场景的更新消息对实时性要求极高，使用TCP会导致画面流畅程度极度依赖网络稳定性，显然是不合适的，对于这种实时消息重传并没有意义，少量丢包也是可以允许的，所以我使用一个单独的udp socket来接收游戏场景消息。
-
-   udp是无连接的，server要通过udp向client发消息，就要知道client的公网ip和port，所以在登录成功后需要一个 udp 握手流程：
-
-   ![p7](https://github.com/JustDoIt0910/MarkDownPictures/blob/main/TankTrouble/p7.png)
-
-   client发送握手包后启动定时器，超时没有收到握手回应则重传。
-
-2. **protocol的设计**
-
-   因为我不想再引入类似 protobuf 的第三方序列化库，所以自己封装了一种简单的消息序列化与反序列化机制，在 Message.h 中实现，其实就是为不同类型的字段提供一个包装结构 Field，一个 Message 里保存一个或多个 Field，在序列化时，Message 依次调用每个 Field 的 toByteArray() 方法，每个 Field 将自己的 data转成字节流append到Buffer中，反序列化时，Message依次调用每个 Field 的 fill()  方法，每个Field根据自己data数据类型的长度，各取所需。对于多字节整数，序列化与反序列化过程中都会自动进行字节序转换。
-
-   比如新开房间的消息是这样定义的：
-
-   ```c++
-   messages_[MSG_NEW_ROOM] = MessageTemplate({
-               new FieldTemplate<std::string>("room_name"),
-               new FieldTemplate<uint8_t>("player_num")
-           });
-   ```
-
-   这里的FieldTemplate, MessageTemplate是用来生成对应类型的Field和Message的，通过调用MessageTemplate 的 getMessage() 方法，就可以得到一个空的Message。为什么需要MessageTemplate呢？因为这样我可以把所有message定义在 Codec 的一个map中，也就是这里的messages_，它的键是消息类型，定义在 Codec.h 中，值是 MessageTemplate。当我需要发送一条新建房间消息，可以这么写：
-
-   ```c++
-   Message newRoom = codec.getEmptyMessage(MSG_NEW_ROOM);
-   newRoom.setField<Field<std::string>>("room_name", name);
-   newRoom.setField<Field<uint8_t>>("player_num", cap);
-   Buffer buf = Codec::packMessage(MSG_NEW_ROOM, newRoom);
-   client->send(buf);
-   ```
-
-   虽然这会使 MessageTemplate 暴露给多个线程，但由于对 MessageTemplate 都是只读访问，所以是安全的。
-
-   每条消息有固定的 header，解码器读取 header 得知消息类型和长度，header 由 Codec 根据Message的长度自动补全。
-
-   ```c++
-    struct FixHeader
-    {
-        uint8_t messageType;
-        uint16_t messageLen;
-   
-        FixHeader() = default;
-        FixHeader(uint8_t mt, uint16_t ml): messageType(mt), messageLen(ml) {}
-   
-        void toByteArray(Buffer* buf) const
-        {
-            buf->appendInt8(static_cast<int8_t>(messageType));
-            buf->appendInt16(static_cast<int16_t>(messageLen));
-        }
-    };
-   ```
-
-   序列化后的数据是这样子的
-
-   **|Type (1byte)|Length (2bytes) | Field1 data |Field2 data |...**
-
-   字符串字段以0结尾
-
-   **|Type (1byte)|Length (2bytes) | Field1(string) data |0x00|Field2 data |...**
-
-   如果payload是数组，序列化时第一个字节是数组元素个数
-
-   **|Type (1byte)|Length (2bytes) | 0x02 |elem1 data|elem2 data |**
-
-
-
-TankTroubleServer中的protocol与这里的是完全一样的。
