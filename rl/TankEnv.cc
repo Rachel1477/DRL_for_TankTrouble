@@ -19,14 +19,13 @@ namespace TankTrouble
     {
         rl_controller_ = std::make_unique<RLController>();
         printf("[DEBUG] TankEnv(): RLController created.\n");
-        rl_controller_->start();
+        getController()->start();
         printf("[DEBUG] TankEnv(): RLController started.\n");
     }
     TankEnv::TankEnv(RLController *rlc) : agent_tank_id_(PLAYER_TANK_ID), enemy_tank_id_(AI_TANK_ID)
     {
-        rl_controller_.reset();
-        if (rlc)
-            rl_controller_.reset(rlc);
+        // 不接管所有权，只保存指针引用
+        rl_controller_ref_ = rlc;
     }
 
     bool TankEnv::hasDirectLineToEnemy(const util::Vec &my_pos, const util::Vec &enemy_pos)
@@ -43,7 +42,7 @@ namespace TankTrouble
         dx /= distance; // normalize
         dy /= distance;
 
-        auto *blocks = rl_controller_->getBlocks();
+        auto *blocks = getController()->getBlocks();
         const double step = 5.0; // pixels per step
 
         for (double t = 0.0; t < distance; t += step)
@@ -74,11 +73,11 @@ namespace TankTrouble
     {
         // reset前先安全退出RL线程
         if (rl_controller_)
-            rl_controller_->quitGame();
+            getController()->quitGame();
         rl_controller_ = std::make_unique<RLController>();
-        rl_controller_->start();
+        getController()->start();
         // 查找新坦克ID
-        auto objsPtr = rl_controller_->getObjects();
+        auto objsPtr = getController()->getObjects();
         auto &objs = *objsPtr;
         agent_tank_id_ = -1;
         enemy_tank_id_ = -1;
@@ -131,7 +130,7 @@ namespace TankTrouble
     std::tuple<std::vector<double>, double, bool> TankEnv::step(int action)
     {
         // Record bullet state before step (to detect if we're hit by own bullet)
-        auto objsPtr_before = rl_controller_->getObjects();
+        auto objsPtr_before = getController()->getObjects();
         auto &objs_before = *objsPtr_before;
         std::vector<int> bullets_before_agent;
         std::vector<int> bullets_before_enemy;
@@ -165,11 +164,11 @@ namespace TankTrouble
         applyActionToAgent(action);
         // advance a fixed number of ticks to simulate one step
         for (int i = 0; i < 5; i++)
-            rl_controller_->stepOnce();
+            getController()->stepOnce();
         step_counter_++; // Increment step counter for timing
 
         // Check if agent died and track which bullets disappeared
-        auto objsPtr_after = rl_controller_->getObjects();
+        auto objsPtr_after = getController()->getObjects();
         auto &objs_after = *objsPtr_after;
         bool me_alive_after = objs_after.find(agent_tank_id_) != objs_after.end();
 
@@ -202,17 +201,18 @@ namespace TankTrouble
             printf("RLController not initialized in getSmithAction()\n");
             return 0;
         }
-        return rl_controller_->getSmithAction();
+        return getController()->getSmithAction();
     }
 
     int TankEnv::getAgentSmithAction()
     {
-        if (!rl_controller_)
+        RLController* ctrl = getController();
+        if (!ctrl)
         {
             printf("RLController not initialized in getAgentSmithAction()\n");
             return 0;
         }
-        return rl_controller_->getAgentSmithAction();
+        return ctrl->getAgentSmithAction();
     }
 
     void TankEnv::applyActionToAgent(int action)
@@ -221,26 +221,26 @@ namespace TankTrouble
         {
         case DO_NOTHING:
         {
-            rl_controller_->dispatchEvent(ControlEvent(ControlEvent::StopForward));
-            rl_controller_->dispatchEvent(ControlEvent(ControlEvent::StopBackward));
-            rl_controller_->dispatchEvent(ControlEvent(ControlEvent::StopRotateCW));
-            rl_controller_->dispatchEvent(ControlEvent(ControlEvent::StopRotateCCW));
+            getController()->dispatchEvent(ControlEvent(ControlEvent::StopForward));
+            getController()->dispatchEvent(ControlEvent(ControlEvent::StopBackward));
+            getController()->dispatchEvent(ControlEvent(ControlEvent::StopRotateCW));
+            getController()->dispatchEvent(ControlEvent(ControlEvent::StopRotateCCW));
             break;
         }
         case MOVE_FORWARD:
-            rl_controller_->dispatchEvent(ControlEvent(ControlEvent::Forward));
+            getController()->dispatchEvent(ControlEvent(ControlEvent::Forward));
             break;
         case MOVE_BACKWARD:
-            rl_controller_->dispatchEvent(ControlEvent(ControlEvent::Backward));
+            getController()->dispatchEvent(ControlEvent(ControlEvent::Backward));
             break;
         case ROTATE_CW:
-            rl_controller_->dispatchEvent(ControlEvent(ControlEvent::RotateCW));
+            getController()->dispatchEvent(ControlEvent(ControlEvent::RotateCW));
             break;
         case ROTATE_CCW:
-            rl_controller_->dispatchEvent(ControlEvent(ControlEvent::RotateCCW));
+            getController()->dispatchEvent(ControlEvent(ControlEvent::RotateCCW));
             break;
         case SHOOT:
-            rl_controller_->dispatchEvent(ControlEvent(ControlEvent::Fire));
+            getController()->dispatchEvent(ControlEvent(ControlEvent::Fire));
             break;
         default:
             break;
@@ -260,7 +260,7 @@ namespace TankTrouble
     std::vector<double> TankEnv::getCurrentState()
     {
         std::vector<double> state;
-        auto objsPtr = rl_controller_->getObjects();
+        auto objsPtr = getController()->getObjects();
         auto &objs = *objsPtr;
         if (objs.find(agent_tank_id_) == objs.end() || objs.find(enemy_tank_id_) == objs.end())
         {
@@ -300,14 +300,14 @@ namespace TankTrouble
     std::vector<double> TankEnv::rayFeatures(int num_rays)
     {
         std::vector<double> feats;
-        auto objsPtr = rl_controller_->getObjects();
+        auto objsPtr = getController()->getObjects();
         auto &objs = *objsPtr;
         if (objs.find(agent_tank_id_) == objs.end())
             return std::vector<double>(num_rays * 3, 1.0);
         auto *me = dynamic_cast<Tank *>(objs[agent_tank_id_].get());
         Object::PosInfo my = me->getCurrentPosition();
         const double MAX_DIST = std::hypot(GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT);
-        auto *blocks = rl_controller_->getBlocks();
+        auto *blocks = getController()->getBlocks();
 
         for (int i = 0; i < num_rays; i++)
         {
@@ -373,7 +373,7 @@ namespace TankTrouble
     double TankEnv::calculateReward(bool &done, bool killed_by_own_bullet)
     {
         done = false;
-        auto objsPtr = rl_controller_->getObjects();
+        auto objsPtr = getController()->getObjects();
         auto &objs = *objsPtr;
         bool meAlive = objs.find(agent_tank_id_) != objs.end();
         bool enemyAlive = objs.find(enemy_tank_id_) != objs.end();

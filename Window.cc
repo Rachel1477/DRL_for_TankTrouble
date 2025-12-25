@@ -20,6 +20,19 @@
 
 namespace TankTrouble
 {
+    // Python对象作为文件作用域static变量，以便在lambda中访问
+#ifdef HAVE_PYBIND11
+    namespace py = pybind11;
+    static py::object g_sys_module;
+    static py::object g_trainer_module;
+    static py::object g_tank_env_module;
+    static py::object g_py_env;  // 保存TankEnv实例，避免在GIL释放后被销毁
+    static py::object g_get_action_py;
+    static py::object g_on_episode_end_py;
+    static py::object g_on_step_py;
+    static bool g_python_initialized = false;
+    static PyThreadState* g_main_thread_state = nullptr;  // 主线程状态
+#endif
     Window::Window() : localCtl(nullptr), ctl(nullptr), rlCtl(nullptr),
                        KeyUpPressed(false), KeyDownPressed(false),
                        KeyLeftPressed(false), KeyRightPressed(false),
@@ -72,10 +85,10 @@ namespace TankTrouble
         ctl = rlCtl.get();  // 只是观察指针，不拥有所有权
 
         // Inject Python DQN callbacks
-        try
-        {
 #ifdef HAVE_PYBIND11
-            static std::unique_ptr<pybind11::scoped_interpreter> guard;
+        static std::unique_ptr<pybind11::scoped_interpreter> guard;
+        if (!guard)
+        {
             // 设置 CONDA 环境变量，确保嵌入式 Python 使用 conda 环境
             setenv("PYTHONHOME", CONDA_PY_PREFIX, 1);
             std::string site = std::string(CONDA_PY_PREFIX) + "/lib/python" + CONDA_PY_VER + "/site-packages";
@@ -85,21 +98,38 @@ namespace TankTrouble
             if (oldpp && *oldpp)
                 newpp = newpp + ":" + std::string(oldpp);
             setenv("PYTHONPATH", newpp.c_str(), 1);
-
-            if (!guard)
-                guard = std::make_unique<pybind11::scoped_interpreter>();
+            guard = std::make_unique<pybind11::scoped_interpreter>();
+        }
+        
+        try
+        {
             namespace py = pybind11;
 
-            // Store ALL Python objects as static to keep them alive after GIL release
-            static py::object sys_module;
-            static py::object trainer_module;
-            static py::object get_action_py;
-            static py::object on_episode_end_py;
-
-            if (!sys_module)
+            // 如果是第二次及以后进入，需要先获取GIL才能清理和重新初始化Python对象
+            std::unique_ptr<py::gil_scoped_acquire> gil_guard;
+            if (g_python_initialized)
             {
-                sys_module = py::module_::import("sys");
-                py::list path = sys_module.attr("path");
+                std::cout << "[RL] Cleaning up previous Python environment..." << std::endl;
+                std::cout << "[RL] Acquiring GIL for cleanup and re-initialization..." << std::endl;
+                gil_guard = std::make_unique<py::gil_scoped_acquire>();
+                
+                // 释放旧的Python对象引用（现在GIL已持有）
+                g_get_action_py = py::object();
+                g_on_episode_end_py = py::object();
+                g_on_step_py = py::object();
+                g_py_env = py::object();  // 释放TankEnv实例
+                g_trainer_module = py::object();
+                g_tank_env_module = py::object();
+                // g_sys_module可以保留，因为它不持有C++对象引用
+                
+                std::cout << "[RL] Python objects cleaned up" << std::endl;
+            }
+            // 注意：不要在这里释放gil_guard，我们需要保持GIL直到完成所有Python初始化
+
+            if (!g_sys_module)
+            {
+                g_sys_module = py::module_::import("sys");
+                py::list path = g_sys_module.attr("path");
                 // Add absolute project paths to sys.path to avoid WD issues
                 path.append(PROJECT_BUILD_DIR);
                 path.append(PROJECT_ROOT_DIR "/build");
@@ -107,79 +137,99 @@ namespace TankTrouble
                 path.append(PROJECT_ROOT_DIR "/python");
             }
 
-            if (!trainer_module)
-            {
-                py::object tte = py::module_::import("tank_trouble_env");
-                py::object py_env = tte.attr("TankEnv")(py::cast(rlCtl.get(), py::return_value_policy::reference));
-                trainer_module = py::module_::import("train_with_gui");
-                trainer_module.attr("set_global_env")(py_env);
-            }
-            // initialize agent (state=33, action=6)
+            // 重新创建Python环境引用
+            std::cout << "[RL] Creating new Python environment..." << std::endl;
+            g_tank_env_module = py::module_::import("tank_trouble_env");
+            g_py_env = g_tank_env_module.attr("TankEnv")(py::cast(rlCtl.get(), py::return_value_policy::reference));
+            g_trainer_module = py::module_::import("train_with_gui");
+            g_trainer_module.attr("set_global_env")(g_py_env);
+            
+            // initialize agent (state=82, action=6)
+            std::cout << "[RL] Initializing agent..." << std::endl;
             try
             {
-                trainer_module.attr("initialize_agent")(82, 6);
+                g_trainer_module.attr("initialize_agent")(82, 6);
             }
-            catch (...)
+            catch (const std::exception &e)
             {
-            } // Updated state size
+                std::cerr << "[RL] initialize_agent exception: " << e.what() << std::endl;
+            }
 
             // Store callbacks
-            static py::object on_step_py;
-            get_action_py = trainer_module.attr("get_action_from_state");
-            on_episode_end_py = trainer_module.attr("on_episode_end");
-            on_step_py = trainer_module.attr("on_step");
+            std::cout << "[RL] Getting Python callbacks..." << std::endl;
+            g_get_action_py = g_trainer_module.attr("get_action_from_state");
+            g_on_episode_end_py = g_trainer_module.attr("on_episode_end");
+            g_on_step_py = g_trainer_module.attr("on_step");
 
-            // Increment ref count to keep objects alive after GIL release
-            get_action_py.inc_ref();
-            on_episode_end_py.inc_ref();
-            on_step_py.inc_ref();
+            g_python_initialized = true;
 
             // Wrap in lambdas that acquire GIL
+            // 使用文件作用域的全局变量，每次重新进入时会被更新
+            std::cout << "[RL] Creating callback wrappers..." << std::endl;
             auto get_action_cb = [](const std::vector<double> &state) -> int
             {
                 py::gil_scoped_acquire acquire;
-                static py::object &func = get_action_py;
-                return func(state).cast<int>();
+                return g_get_action_py(state).cast<int>();
             };
 
             auto episode_end_cb = [](int episode, double reward, bool won)
             {
                 py::gil_scoped_acquire acquire;
-                static py::object &func = on_episode_end_py;
-                func(episode, reward, won);
+                g_on_episode_end_py(episode, reward, won);
             };
 
             auto step_cb = [](const std::vector<double> &prev_state, int prev_action,
                               double reward, const std::vector<double> &next_state, bool done)
             {
                 py::gil_scoped_acquire acquire;
-                static py::object &func = on_step_py;
-                func(prev_state, prev_action, reward, next_state, done);
+                g_on_step_py(prev_state, prev_action, reward, next_state, done);
             };
 
             static_cast<RLController *>(ctl)->setGetActionCallback(get_action_cb);
             static_cast<RLController *>(ctl)->setEpisodeEndCallback(episode_end_cb);
             static_cast<RLController *>(ctl)->setStepCallback(step_cb);
-            std::cout << "[RL] Python callbacks injected successfully (sys.path augmented)" << std::endl;
-
-            // CRITICAL: Release GIL to allow agentLoop thread to acquire it
-            // The scoped_interpreter holds GIL by default; we must explicitly release it
-            // so that worker threads can call Python callbacks
-            PyEval_SaveThread();
-            std::cout << "[RL] GIL released for worker threads" << std::endl;
-#endif
+            std::cout << "[RL] Python callbacks injected successfully" << std::endl;
+            
+            // 注意：不要在这里释放gil_guard
+            // 它会在try块结束时自动析构，释放GIL（如果是第二次及以后进入）
+            // 第一次进入时gil_guard未创建，GIL由scoped_interpreter持有
         }
         catch (const std::exception &e)
         {
             std::cerr << "[RL] Python callback injection failed: " << e.what() << std::endl;
         }
 
+        // CRITICAL: Release GIL to allow agentLoop thread to acquire it
+        // 在try块结束后，GIL的状态：
+        // - 第一次进入：由scoped_interpreter持有
+        // - 第二次进入：gil_guard已析构并释放GIL
+        // 所以第一次需要释放，第二次已经释放了
+        std::cout << "[RL] Releasing GIL for worker threads..." << std::endl;
+        if (!g_main_thread_state)
+        {
+            // 第一次进入，需要释放GIL
+            g_main_thread_state = PyEval_SaveThread();
+            std::cout << "[RL] GIL released (first time)" << std::endl;
+        }
+        else
+        {
+            // 第二次及以后进入，GIL已被gil_guard释放，无需再释放
+            std::cout << "[RL] GIL already released by gil_guard" << std::endl;
+        }
+#endif
+
         // Start controller and show view
+        std::cout << "[RL] Starting controller..." << std::endl;
         ctl->start();
+        std::cout << "[RL] Controller started, creating game view..." << std::endl;
         gameView = std::make_unique<GameView>(ctl);
+        std::cout << "[RL] Game view created, connecting signals..." << std::endl;
         gameView->signal_quit_game().connect(sigc::mem_fun(*this, &Window::toEntryView));
+        std::cout << "[RL] Adding game view to window..." << std::endl;
         add(*gameView);
+        std::cout << "[RL] Showing game view..." << std::endl;
         gameView->show();
+        std::cout << "[RL] onUserChooseRLTraining completed" << std::endl;
     }
 
     void Window::toEntryView()

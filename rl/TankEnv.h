@@ -43,8 +43,15 @@ namespace TankTrouble
         // Query AgentSmith's discrete action for the AGENT tank (agent-perspective)
         int getAgentSmithAction();
 
+    private:
+        // 辅助方法：获取正确的RLController指针
+        RLController* getController() {
+            return rl_controller_ref_ ? rl_controller_ref_ : rl_controller_.get();
+        }
+        
     public:
-        std::unique_ptr<RLController> rl_controller_;
+        std::unique_ptr<RLController> rl_controller_;  // 当TankEnv创建RLController时使用
+        RLController* rl_controller_ref_ = nullptr;     // 当外部传入RLController时使用（不拥有所有权）
         int agent_tank_id_;
         int enemy_tank_id_;
         // std::unique_ptr<AStar> astar_; // 移除AStar

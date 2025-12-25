@@ -56,6 +56,8 @@ namespace TankTrouble
         StepCallback step_cb_;
 
         std::atomic<bool> training_active_{false};
+        std::condition_variable stop_cv_;  // 用于快速唤醒线程
+        std::mutex stop_mu_;
         int episode_count_;
         double total_reward_;
 

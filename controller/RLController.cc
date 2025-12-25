@@ -78,37 +78,29 @@ namespace TankTrouble
     {
         std::cout << "[RL] RLController::quitGame called, stopping threads..." << std::endl;
         training_active_.store(false);
+        
+        // 唤醒所有等待的线程
+        stop_cv_.notify_all();
 
-        auto wait_with_timeout = [](std::thread &t, int timeout_ms)
-        {
-            if (!t.joinable())
-                return;
-            auto start = std::chrono::steady_clock::now();
-            while (t.joinable())
-            {
-                if (std::chrono::steady_clock::now() - start > std::chrono::milliseconds(timeout_ms))
-                {
-                    std::cerr << "[RL] Thread join timeout, detaching..." << std::endl;
-                    t.detach();
-                    return;
-                }
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            }
-        };
+        // 停止底层的LocalController线程
+        ctl_shared_->quitGame();
 
+        // 直接join线程（由于使用了条件变量，线程会快速退出）
         if (agent_thread_.joinable())
         {
             std::cout << "[RL] Waiting for agent thread..." << std::endl;
-            wait_with_timeout(agent_thread_, 2000);
+            agent_thread_.join();
+            std::cout << "[RL] Agent thread joined successfully" << std::endl;
         }
+        
         if (episode_thread_.joinable())
         {
             std::cout << "[RL] Waiting for episode thread..." << std::endl;
-            wait_with_timeout(episode_thread_, 2000);
+            episode_thread_.join();
+            std::cout << "[RL] Episode thread joined successfully" << std::endl;
         }
 
         std::cout << "[RL] All threads stopped" << std::endl;
-        ctl_shared_->quitGame();
     }
     void RLController::dispatchEvent(const ControlEvent &event)
     {
@@ -159,7 +151,11 @@ namespace TankTrouble
                     break;
                 }
             }
-            std::this_thread::sleep_for(100ms);
+            
+            // 使用条件变量等待，可以被stop_cv_快速唤醒
+            std::unique_lock<std::mutex> lock(stop_mu_);
+            stop_cv_.wait_for(lock, 100ms, [this]() { return !training_active_.load(); });
+            
             wait_count++;
         }
         if (wait_count >= 100)
@@ -185,7 +181,8 @@ namespace TankTrouble
                 if (s.empty() || s.size() != 82)
                 {
                     std::cerr << "[RL] agentLoop: Invalid state size: " << s.size() << std::endl;
-                    std::this_thread::sleep_for(50ms);
+                    std::unique_lock<std::mutex> lock(stop_mu_);
+                    stop_cv_.wait_for(lock, 50ms, [this]() { return !training_active_.load(); });
                     continue;
                 }
                 double dprog = 0, aprog = 0, spin = 0, stepc = 0;
@@ -246,7 +243,11 @@ namespace TankTrouble
             {
                 std::cerr << "[RL] agentLoop: Exception in main loop: " << e.what() << std::endl;
             }
-            std::this_thread::sleep_for(50ms);
+            
+            // 使用条件变量等待，可以被stop_cv_快速唤醒
+            std::unique_lock<std::mutex> lock(stop_mu_);
+            stop_cv_.wait_for(lock, 50ms, [this]() { return !training_active_.load(); });
+            
             if (std::chrono::steady_clock::now() - last_log > 5s)
             {
                 last_log = std::chrono::steady_clock::now();
@@ -346,8 +347,12 @@ namespace TankTrouble
             }
             prev_agent_alive = agent_alive;
             prev_smith_alive = smith_alive;
-            std::this_thread::sleep_for(100ms);
+            
+            // 使用条件变量等待，可以被stop_cv_快速唤醒
+            std::unique_lock<std::mutex> lock(stop_mu_);
+            stop_cv_.wait_for(lock, 100ms, [this]() { return !training_active_.load(); });
         }
+        std::cout << "[RL] episodeLoop exited" << std::endl;
     }
 
     std::vector<double> RLController::buildState()
