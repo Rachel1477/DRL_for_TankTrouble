@@ -37,7 +37,13 @@ namespace TankTrouble
         initAll();
     }
 
-    LocalController::~LocalController() { util::Id::reset(); }
+    LocalController::~LocalController()
+    {
+        // 停止运行中的线程
+        quitGame();
+        // 等待父类Controller析构函数join线程
+        util::Id::reset();
+    }
     Controller::ObjectListPtr LocalController::getObjects()
     {
         return Controller::getObjects();

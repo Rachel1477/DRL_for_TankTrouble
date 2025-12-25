@@ -34,11 +34,21 @@ namespace TankTrouble
     {
         if (g_instance == this)
             g_instance = nullptr;
+        
+        // 停止所有线程（包括LocalController的线程）
         training_active_.store(false);
+        
+        // 停止底层的LocalController线程
+        if (ctl_shared_)
+            ctl_shared_->quitGame();
+        
+        // 等待RL线程结束
         if (agent_thread_.joinable())
             agent_thread_.join();
         if (episode_thread_.joinable())
             episode_thread_.join();
+        
+        // 如果拥有LocalController，则删除它
         if (own_controller_ && ctl_shared_)
         {
             delete ctl_shared_;

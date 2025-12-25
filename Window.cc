@@ -20,7 +20,7 @@
 
 namespace TankTrouble
 {
-    Window::Window() : ctl(nullptr),
+    Window::Window() : localCtl(nullptr), ctl(nullptr), rlCtl(nullptr),
                        KeyUpPressed(false), KeyDownPressed(false),
                        KeyLeftPressed(false), KeyRightPressed(false),
                        spacePressed(false)
@@ -54,9 +54,9 @@ namespace TankTrouble
         remove();
         if (!localCtl)
             localCtl = std::make_unique<LocalController>();
-        ctl = std::unique_ptr<Controller>(localCtl.get());
+        ctl = localCtl.get();  // 只是观察指针，不拥有所有权
         ctl->start();
-        gameView = std::make_unique<GameView>(ctl.get());
+        gameView = std::make_unique<GameView>(ctl);
         gameView->signal_quit_game().connect(sigc::mem_fun(*this, &Window::toEntryView));
         add(*gameView);
         gameView->show();
@@ -69,7 +69,7 @@ namespace TankTrouble
             localCtl = std::make_unique<LocalController>();
         if (!rlCtl)
             rlCtl = std::make_unique<RLController>(localCtl.get());
-        ctl = std::unique_ptr<Controller>(rlCtl.get());
+        ctl = rlCtl.get();  // 只是观察指针，不拥有所有权
 
         // Inject Python DQN callbacks
         try
@@ -157,9 +157,9 @@ namespace TankTrouble
                 func(prev_state, prev_action, reward, next_state, done);
             };
 
-            static_cast<RLController *>(ctl.get())->setGetActionCallback(get_action_cb);
-            static_cast<RLController *>(ctl.get())->setEpisodeEndCallback(episode_end_cb);
-            static_cast<RLController *>(ctl.get())->setStepCallback(step_cb);
+            static_cast<RLController *>(ctl)->setGetActionCallback(get_action_cb);
+            static_cast<RLController *>(ctl)->setEpisodeEndCallback(episode_end_cb);
+            static_cast<RLController *>(ctl)->setStepCallback(step_cb);
             std::cout << "[RL] Python callbacks injected successfully (sys.path augmented)" << std::endl;
 
             // CRITICAL: Release GIL to allow agentLoop thread to acquire it
@@ -176,7 +176,7 @@ namespace TankTrouble
 
         // Start controller and show view
         ctl->start();
-        gameView = std::make_unique<GameView>(ctl.get());
+        gameView = std::make_unique<GameView>(ctl);
         gameView->signal_quit_game().connect(sigc::mem_fun(*this, &Window::toEntryView));
         add(*gameView);
         gameView->show();
@@ -187,8 +187,14 @@ namespace TankTrouble
         remove();
         if (gameView)
             gameView.reset();
-        if (ctl)
-            ctl.reset();
+        
+        // 显式停止并销毁controllers（会停止所有线程）
+        ctl = nullptr;
+        if (rlCtl)
+            rlCtl.reset();
+        if (localCtl)
+            localCtl.reset();
+        
         add(entryView);
         entryView.show();
     }
@@ -206,7 +212,7 @@ namespace TankTrouble
     void Window::onGameBegin()
     {
         remove();
-        gameView = std::make_unique<GameView>(ctl.get());
+        gameView = std::make_unique<GameView>(ctl);
         add(*gameView);
         gameView->signal_quit_game().connect(sigc::mem_fun(*this, &Window::onGameOff));
         gameView->show();
@@ -223,7 +229,7 @@ namespace TankTrouble
         if (!ctl)
             return Gtk::Window::on_key_press_event(key_event);
         // Disable human control in RL training mode
-        if (dynamic_cast<RLController *>(ctl.get()) != nullptr)
+        if (dynamic_cast<RLController *>(ctl) != nullptr)
             return Gtk::Window::on_key_press_event(key_event);
         if (!KeyUpPressed && key_event->keyval == GDK_KEY_Up)
         {
@@ -263,7 +269,7 @@ namespace TankTrouble
         if (!ctl)
             return Gtk::Window::on_key_press_event(key_event);
         // Disable human control in RL training mode
-        if (dynamic_cast<RLController *>(ctl.get()) != nullptr)
+        if (dynamic_cast<RLController *>(ctl) != nullptr)
             return Gtk::Window::on_key_press_event(key_event);
         if (key_event->keyval == GDK_KEY_Up)
         {

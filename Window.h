@@ -39,7 +39,7 @@ namespace TankTrouble
         void onGameOff();
 
         std::unique_ptr<LocalController> localCtl;
-        std::unique_ptr<Controller> ctl;
+        Controller* ctl;  // 观察指针，不拥有所有权
         std::unique_ptr<RLController> rlCtl;
         std::unique_ptr<GameView> gameView;
         EntryView entryView;
